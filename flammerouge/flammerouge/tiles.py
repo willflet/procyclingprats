@@ -49,10 +49,10 @@ BASE_GAME_TILES = dict(
     U='uuffff'
 )
 
-STRAIGHT_L = 2.2
 LANE_W = 1.3
-SHARP_R = 2.8
-WIDE_R = 6.0
+STRAIGHT_L = 2.0
+SHARP_R = 3.0
+WIDE_R = 5.5
 sin45 = (2**0.5)/2
 cos45 = sin45
 sin22 = ((2 - (2**0.5))**0.5)/2

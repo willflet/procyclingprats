@@ -1,13 +1,11 @@
 """ Interactive board game. """
 
-from copy import deepcopy
 import numpy as np
 import tkinter as tk
 from .tiles import GEOMETRIES, STRAIGHT_L, LANE_W, SHARP_R, WIDE_R
-from .game import Game
 
 
-SQUARE_SIZE = 18
+SQUARE_SIZE = 17
 
 sin45 = (2**0.5)/2
 cos45 = sin45
@@ -120,23 +118,3 @@ class Board(object):
             [ np.cos(angle*np.pi/180),  np.sin(angle*np.pi/180)],
              [-np.sin(angle*np.pi/180),  np.cos(angle*np.pi/180)]
         ])
-
-
-def main():
-
-    game = Game()
-    game.setup()
-
-    initial_state = deepcopy(game.state)
-
-    board = Board()
-    board.draw_route(game.state.route, game.starting_orientation)
-
-    for rider, square in zip(game.state.rider_precedence, game.state.route.squares[8:]):
-        board.place_rider(rider, square, lane=0)
-
-    board.activate()
-
-
-if __name__ == '__main__':
-    main()

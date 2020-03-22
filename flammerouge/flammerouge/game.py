@@ -1,8 +1,11 @@
 """ Interactive board game. """
 
 import random
+from copy import deepcopy
 from .riders import Team
 from .route import Route
+from .board import Board
+from .presets import COURSES
 
 
 AFFIRMATIVE_RESPONSES = ('y', 'yes', 't', 'true')
@@ -41,7 +44,7 @@ class Game(object):
     """ An interactive game of Flamme Rouge. """
 
     def __init__(self):
-        ...
+        self.setup()
 
     def setup(self, colour_choices=('red', 'blue', 'black', 'green')):
         teams = []
@@ -49,7 +52,9 @@ class Game(object):
             using = input(f'\nIs someone using the {colour} team? (y/n)\n')
 
             while True:
-                if using.lower() in AFFIRMATIVE_RESPONSES:
+                if not using:
+                    using = input()
+                elif using.lower() in AFFIRMATIVE_RESPONSES:
                     # riders = input(
                     #     f'\nWhat riders is the {colour} team using?\n'
                     #     '    (Default: rouleur sprinteur)\n'
@@ -64,9 +69,22 @@ class Game(object):
                     using = input("Didn't understand, try again please:\n")
 
         route_code = input('\nEnter a code to define the course:\n')
-        route = Route.from_code(route_code)
+        key = route_code.lower().replace(' ','').replace('-','').replace("'",'')
+        if key in COURSES:
+            route = Route.from_code(COURSES[key][0])
+            rotation = COURSES[key][1]
+        else:
+            route = Route.from_code(route_code)
+            rotation = int(input('\nBoard rotation? (Default 0 degrees)\n') or 0)
+
+        self.board = Board()
+        self.board.draw_route(route, rotation)
 
         self.state = GameState(route, teams)
+        self.initial_state = deepcopy(self.state)
+
+        for rider, square in zip(self.state.rider_precedence, route.squares[8:]):
+            self.board.place_rider(rider, square, lane=0)
 
         print(
             f'\n\n\n=============================================='
@@ -92,8 +110,8 @@ class Game(object):
             else:
                 using = input("Didn't understand, try again please:\n")
 
-        rotation = input('\nBoard rotation? (Default 0 degrees)\n')
-        if rotation:
-            self.starting_orientation = int(rotation)
-        else:
-            self.starting_orientation = 0
+        self.board.activate()
+
+
+if __name__ == '__main__':
+    Game()

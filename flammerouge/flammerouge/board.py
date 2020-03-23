@@ -31,15 +31,48 @@ class Board(object):
     def draw_route(self, route, starting_orientation=0):
         position = np.array([[1000.0,-1000.0]])/SQUARE_SIZE
         orientation = starting_orientation
-        for square in route.squares:
-            rotate = self.rotation_matrix(orientation)
-            square.positions[0] = position + [STRAIGHT_L/4, -LANE_W/2] @ rotate
-            square.positions[0] *= SQUARE_SIZE
-            square.positions[1] = position + [STRAIGHT_L/4, LANE_W/2] @ rotate
-            square.positions[1] *= SQUARE_SIZE
 
-            self.draw_space(square, 0, position, orientation)
-            self.draw_space(square, 1, position, orientation)
+        last_colour = '#dddddd'
+        last_width = route.squares[0].width
+        for square in route.squares:
+
+            rotate = self.rotation_matrix(orientation)
+
+            if square.width == 1:
+                square.positions[0] = position + [STRAIGHT_L/4, 0] @ rotate
+            elif square.width == 2:
+                square.positions[0] = position + [STRAIGHT_L/4, -LANE_W/2] @ rotate
+                square.positions[1] = position + [STRAIGHT_L/4, LANE_W/2] @ rotate
+            elif square.width == 3:
+                square.positions[0] = position + [STRAIGHT_L/4, -LANE_W] @ rotate
+                square.positions[1] = position + [STRAIGHT_L/4, 0] @ rotate
+                square.positions[2] = position + [STRAIGHT_L/4, LANE_W] @ rotate
+
+            for i in range(square.width):
+                square.positions[i] *= SQUARE_SIZE
+
+            for lane in range(square.width):
+                self.draw_space(square, lane, position, orientation)
+
+            if square.base_colour != last_colour:
+                border_geom = np.array([
+                    [-0.15, (max(last_width, square.width)/2 + 0.3)*LANE_W],
+                    [-0.15, (-max(last_width, square.width)/2 - 0.3)*LANE_W],
+                    [0.15, (-max(last_width, square.width)/2 - 0.3)*LANE_W],
+                    [0.15, (max(last_width, square.width)/2 + 0.3)*LANE_W]
+                ])
+                border_geom = (border_geom @ rotate + position) * SQUARE_SIZE
+                border_geom[:,-1] *= -1
+                colour = last_colour if last_colour != '#777777' else square.base_colour
+                border = self._c.create_polygon(
+                    border_geom.flatten().tolist(),
+                    fill=colour,
+                    outline='#404040',
+                    width=(SQUARE_SIZE/10)
+                )
+                self._c.lift(border)
+                last_colour = square.base_colour
+                last_width = square.width
 
             if square.curve == 'straight':
                 position += 1.05*([STRAIGHT_L, 0.0] @ rotate)
@@ -59,12 +92,16 @@ class Board(object):
     def draw_space(self, square, lane, position, orientation):
         rotate = self.rotation_matrix(orientation)
 
-        key = f'{square.curve}_{lane}'
+        key = f'{square.curve}_{lane*2 - square.width + 3}'
         geometry = (GEOMETRIES[key] @ rotate + position) * SQUARE_SIZE
         geometry[:,1] *= -1
+        if square.special == 'breakaway' and lane != square.width-1:
+            colour = '#dddddd'
+        else:
+            colour = square.base_colour
         square.spaces[lane] = self._c.create_polygon(
             geometry.flatten().tolist(),
-            fill=square.base_colour,
+            fill=colour,
             outline='#404040',
             width=(SQUARE_SIZE/5)
         )
@@ -72,9 +109,7 @@ class Board(object):
         self._c.tag_bind(square.spaces[lane], '<Button-1>', func)
 
     def place_rider(self, rider, square, lane):
-        if square.occupants[lane] is not None:
-            print('clicked an already-occupied space')
-        else:
+        if square.occupants[lane] is None:
             square.occupants[lane] = rider
             rider._position = (square, lane)
             self._c.itemconfig(square.spaces[lane], fill=rider.team.colour)
@@ -87,23 +122,23 @@ class Board(object):
             self.mouse_state = None
 
     def pick_up_rider(self, rider):
-        if rider is None:
-            print('clicked an empty space')
-        else:
+        if rider is not None:
             square, lane = rider.position
             square.occupants[lane] = None
             rider._position = None
-            self._c.itemconfig(square.spaces[lane], fill=square.base_colour)
+            if square.special == 'breakaway' and lane != square.width-1:
+                colour = '#dddddd'
+            else:
+                colour = square.base_colour
+            self._c.itemconfig(square.spaces[lane], fill=colour)
             self._c.delete(square.text[lane])
             self.mouse_state = rider
 
     def click_space(self, event, square, lane):
         rider = square.occupants[lane]
         if self.mouse_state is None:
-            print('empty-handed, picking up')
             self.pick_up_rider(rider)
         else:
-            print(f"placing {self.mouse_state.team.name}'s {self.mouse_state.name}")
             self.place_rider(self.mouse_state, square, lane)
 
     def scroll_start(self, event):

@@ -38,5 +38,19 @@ COURSES = {
     'lentrecotes':                      ('adeNibjpOKRLtCFSqMhu', 0),
     'colcintre':                        ('anJtDBshIOKPFGRLmeqcu', 0),
     'colhector':                        ('ashbMODPJTIKLFQERGCNU', 0),
-    'piegepoursprinteurs':              ('aLtqDPHBJiFkromneScgu', 0)
+    'piegepoursprinteurs':              ('aLtqDPHBJiFkromneScgu', 0),
+
+    'stage7':                           ('aw3gMRPkeqos4cDHjTniu', 0),
+    'stage8':                           ('awh4oIcQDF3prsejLktgu', 0),
+    'stage9':                           ('Aw3p5Wokjq4e8VhgirsTu', 180),
+    'stage11':                          ('aw8zqgirxysopthk7VeJu', 0),
+    'stage12':                          ('Aw4qMOKRFsd3ptnhgeTju', 202.5),
+    'stage18':                          ('awh4Lopc5Vr3gqJksteIU', 157.5),
+
+    'stage7+':                          ('v23gMRPkeqos4cDHjTYniu', 0),
+    'stage8+':                          ('v2h4oIcQDF3prsejLktgYu', 0),
+    'stage9+':                          ('12Y3p5Wokjq4e8VhgirsTu', 180),
+    'stage11+':                         ('v28zqgir9xysopthk7VeJu', 0),
+    'stage12+':                         ('124qMOKRFsd3ptnYhgeTju', 202.5),
+    'stage18+':                         ('v2h4YLopc5Vr3gqJksteIU', 157.5),
 }

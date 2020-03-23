@@ -68,7 +68,7 @@ class Game(object):
                 else:
                     using = input("Didn't understand, try again please:\n")
 
-        route_code = input('\nEnter a code to define the course:\n')
+        route_code = input('\nEnter a stage name or a code to define the course:\n')
         key = route_code.lower().replace(' ','').replace('-','').replace("'",'')
         if key in COURSES:
             route = Route.from_code(COURSES[key][0])
@@ -84,7 +84,7 @@ class Game(object):
         self.initial_state = deepcopy(self.state)
 
         for rider, square in zip(self.state.rider_precedence, route.squares[8:]):
-            self.board.place_rider(rider, square, lane=0)
+            self.board.place_rider(rider, square, lane=square.width-1)
 
         print(
             f'\n\n\n=============================================='

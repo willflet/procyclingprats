@@ -1,5 +1,6 @@
 """ Tiles for making courses. """
 
+import numpy as np
 from itertools import chain
 from .tiles import BASE_GAME_TILES, PELOTON_EXPANSION_TILES
 
@@ -36,6 +37,15 @@ class Square(object):
             return '#777777'
         else:
             return '#777777'
+
+    @property
+    def profile_character(self):
+        if self.special == 'cobbles':
+            return '⣀⠒¨'
+        elif self.special == 'feed zone':
+            return '‗═˭'
+        else:
+            return '_—‾'
 
     @classmethod
     def from_char(cls, character, index, curve='straight'):
@@ -87,7 +97,7 @@ class Tile(object):
 
     @property
     def distance(self):
-        return len(self.squares)
+        return sum(1 for square in self.squares if square.special not in ('start', 'finish'))
 
     @property
     def ascent(self):
@@ -142,6 +152,38 @@ class Route(object):
     @property
     def descent(self):
         return sum(tile.descent for tile in self.tiles)
+
+    @property
+    def profile(self):
+        square_heights = []
+        km0 = 0
+        for square in self.squares:
+            if square.special == 'start':
+                square_heights.append(0)
+                km0 += 1
+            elif square.special == 'uphill':
+                square_heights.append(square_heights[-1] + 1)
+            elif square.special == 'downhill':
+                square_heights.append(square_heights[-1] - 1)
+            elif square.special == 'finish':
+                break
+            else:
+                square_heights.append(square_heights[-1])
+        nadir = min(square_heights)
+        lines = (max(square_heights) - nadir)//3 + 1
+
+        char_grid = np.full([lines, self.distance+1], ' ')
+        for i, (square, h) in enumerate(zip(self.squares[km0-1:], square_heights[km0-1:])):
+            line = (h - nadir)//3
+            h_in_line = (h - nadir)%3
+            char_grid[line, i] = square.profile_character[h_in_line]
+
+        profile_string = ''
+        for line in char_grid[::-1]:
+            for char in line:
+                profile_string += char
+            profile_string += '\n'
+        return profile_string
 
     @classmethod
     def from_code(cls, code):

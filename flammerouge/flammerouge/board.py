@@ -2,6 +2,8 @@
 
 import numpy as np
 import tkinter as tk
+import pygame
+import os
 from .tiles import GEOMETRIES, STRAIGHT_L, LANE_W, SHARP_R, WIDE_R
 
 
@@ -15,15 +17,40 @@ cos22 = ((2 + (2**0.5))**0.5)/2
 
 class Board(object):
 
-    def __init__(self):
+    def __init__(self, audio_path='./commentary'):
         self.window = tk.Tk()
         self.window.geometry(str(2000)+'x'+str(2000))
         self._c = tk.Canvas(self.window, width=2000, height=2000, bg='#83c750')
         self._c.pack()
-        self._c.bind("<ButtonPress-1>", self.scroll_start)
-        self._c.bind("<B1-Motion>", self.scroll_move)
+        self._c.bind('<ButtonPress-1>', self.scroll_start)
+        self._c.bind('<B1-Motion>', self.scroll_move)
+
+        self.audio_path = audio_path
+        self.make_soundboard()
 
         self.mouse_state = None
+        self.pygame = pygame
+        self.pygame.init()
+        self.pygame.mixer.init(frequency=70000)
+        self.window.focus_set()
+
+    def make_soundboard(self):
+        self.window.bind("q", self.attaque_de_pierre_rolland)
+        self.window.bind("w", lambda event: self.play_audio('hes_racing_on.ogg'))
+        self.window.bind("e", lambda event: self.play_audio('fed_up_forming_alliances.ogg'))
+        self.window.bind("r", lambda event: self.play_audio('gets_his_head_down.ogg'))
+        self.window.bind("t", lambda event: self.play_audio('what_a_finish.ogg'))
+        self.window.bind("y", lambda event: self.play_audio('yeeesss_he_takes_it.ogg'))
+        self.window.bind("a", lambda event: self.play_audio('nobody_wants_to_chase.ogg'))
+        self.window.bind("s", lambda event: self.play_audio('oh_here_we_go_then.ogg'))
+        self.window.bind("d", lambda event: self.play_audio('oh_drama_here.ogg'))
+        self.window.bind("f", lambda event: self.play_audio('everyone_has_to_be_tired_here.ogg'))
+        self.window.bind("g", lambda event: self.play_audio('oh_nightmare_scenario.ogg'))
+        self.window.bind("h", lambda event: self.play_audio('oh_heartbreak_here.ogg'))
+        self.window.bind("z", lambda event: self.play_audio('absolutely_fantastic.ogg'))
+        self.window.bind("x", lambda event: self.play_audio('loved_that.ogg'))
+        self.window.bind("c", lambda event: self.play_audio('chuckle.ogg'))
+        self.window.bind("v", lambda event: self.play_audio('oh_chapeau_sir.ogg'))
 
     def activate(self):
         self.window.mainloop()
@@ -71,8 +98,8 @@ class Board(object):
                     width=(SQUARE_SIZE/10)
                 )
                 self._c.lift(border)
-                last_colour = square.base_colour
-                last_width = square.width
+            last_colour = square.base_colour
+            last_width = square.width
 
             if square.curve == 'straight':
                 position += 1.05*([STRAIGHT_L, 0.0] @ rotate)
@@ -133,6 +160,26 @@ class Board(object):
             self._c.itemconfig(square.spaces[lane], fill=colour)
             self._c.delete(square.text[lane])
             self.mouse_state = rider
+
+    def change_background_with_delay(self, colour_sequence):
+        self._c.configure(bg=colour_sequence[self.colour_index])
+        self.colour_index += 1
+        if self.colour_index >= len(colour_sequence):
+            return
+        else:
+            self.window.after(494, lambda: self.change_background_with_delay(colour_sequence))
+
+    def attaque_de_pierre_rolland(self, event):
+        self.play_audio('attaque_de_pierre_rolland.ogg')
+
+        self.colour_index = 0
+        colour_sequence = ['#ffdd00', '#527439']*7 + ['#ffdd00', '#83c750']
+
+        self.window.after(1270, lambda: self.change_background_with_delay(colour_sequence))
+
+    def play_audio(self, filename):
+        self.pygame.mixer.music.load(os.path.join(self.audio_path, filename))
+        self.pygame.mixer.music.play()
 
     def click_space(self, event, square, lane):
         rider = square.occupants[lane]

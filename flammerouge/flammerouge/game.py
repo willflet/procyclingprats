@@ -5,7 +5,7 @@ from copy import deepcopy
 from .riders import Team
 from .route import Route
 from .board import Board
-from .presets import COURSES
+from .presets import COURSES, DUPLICATE_NAMES, LONG_STAGES
 
 
 AFFIRMATIVE_RESPONSES = ('y', 'yes', 't', 'true')
@@ -68,30 +68,28 @@ class Game(object):
                 else:
                     using = input("Didn't understand, try again please:\n")
 
-        route_code = input('\nEnter a stage name or a code to define the course:\n')
+        route_code = input('\nEnter a stage name or a code to define the course. Or type "show" to see presets\n')
+        if route_code == 'show':
+            for key in COURSES:
+                print(key)
+                route = Route.from_code(COURSES[key][0])
+                print(route.profile)
+            route_code = input('\nEnter a stage name or a code to define the course.\n')
         key = route_code.lower().replace(' ','').replace('-','').replace("'",'')
         if key in COURSES:
             route = Route.from_code(COURSES[key][0])
             rotation = COURSES[key][1]
+        elif key in DUPLICATE_NAMES:
+            route = Route.from_code(COURSES[DUPLICATE_NAMES[key]][0])
+            rotation = COURSES[DUPLICATE_NAMES[key]][1]
         else:
+            rotation = int(input(f'\nManual stage creation mode using code "{route_code}".'
+                                 f'\nBearing of first tile? (Default 0 degrees)\n') or 0)
             route = Route.from_code(route_code)
-            rotation = int(input('\nBoard rotation? (Default 0 degrees)\n') or 0)
 
-        self.board = Board()
-        self.board.draw_route(route, rotation)
-
-        self.state = GameState(route, teams)
-        self.initial_state = deepcopy(self.state)
-
-        for rider, square in zip(self.state.rider_precedence, route.squares[8:]):
-            self.board.place_rider(rider, square, lane=square.width-1)
-
-        print(
-            f'\n\n\n=============================================='
-            f'\nReady to race!',
-            f'\nCourse is {route.distance} squares long',
-            f'There are {route.ascent} uphill squares and {route.descent} downhill.',
-            f'',
+        print('\n',
+              route.profile,
+            f'\nReady to race!\n',
             f'Teams are:',
             sep='\n'
         )
@@ -109,6 +107,15 @@ class Game(object):
                 self.setup()
             else:
                 using = input("Didn't understand, try again please:\n")
+
+        self.board = Board()
+        self.board.draw_route(route, rotation)
+
+        self.state = GameState(route, teams)
+        self.initial_state = deepcopy(self.state)
+
+        for rider, square in zip(self.state.rider_precedence, route.squares[8:]):
+            self.board.place_rider(rider, square, lane=square.width-1)
 
         self.board.activate()
 

@@ -55,12 +55,21 @@ class Game(object):
                 if not using:
                     using = input()
                 elif using.lower() in AFFIRMATIVE_RESPONSES:
-                    # riders = input(
-                    #     f'\nWhat riders is the {colour} team using?\n'
-                    #     '    (Default: rouleur sprinteur)\n'
-                    # ).split()
-                    # if not riders:
-                    riders = ['rouleur', 'sprinteur']
+                    riders = (
+                        input(
+                            f'\nWhat riders is the {colour} team using?\n'
+                            '    (Default: rouleur sprinteur)\n'
+                        ) or 'r s'
+                    ).split()
+                    while True:
+                        if len(riders) == 2:
+                            break
+                        else:
+                            riders = (
+                                input(
+                                    f'\nExpected two riders (space-separated); try again.\n'
+                                ) or 'r s'
+                            ).split()
                     teams.append(Team(colour, riders))
                     break
                 elif using.lower() in NEGATIVE_RESPONSES:

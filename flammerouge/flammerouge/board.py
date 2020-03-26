@@ -18,9 +18,9 @@ cos22 = ((2 + (2**0.5))**0.5)/2
 class Board(object):
 
     def __init__(self, audio_path='./commentary'):
-        self.window = tk.Tk()
-        self.window.geometry(str(2000)+'x'+str(2000))
-        self._c = tk.Canvas(self.window, width=2000, height=2000, bg='#83c750')
+        self._w = tk.Tk()
+        self._w.geometry(str(2000)+'x'+str(2000))
+        self._c = tk.Canvas(self._w, width=2000, height=2000, bg='#83c750')
         self._c.pack()
         self._c.bind('<ButtonPress-1>', self.scroll_start)
         self._c.bind('<B1-Motion>', self.scroll_move)
@@ -32,28 +32,28 @@ class Board(object):
         self.pygame = pygame
         self.pygame.init()
         self.pygame.mixer.init(frequency=70000)
-        self.window.focus_set()
+        self._w.focus_set()
 
     def make_soundboard(self):
-        self.window.bind("q", self.attaque_de_pierre_rolland)
-        self.window.bind("w", lambda event: self.play_audio('hes_racing_on.ogg'))
-        self.window.bind("e", lambda event: self.play_audio('fed_up_forming_alliances.ogg'))
-        self.window.bind("r", lambda event: self.play_audio('gets_his_head_down.ogg'))
-        self.window.bind("t", lambda event: self.play_audio('what_a_finish.ogg'))
-        self.window.bind("y", lambda event: self.play_audio('yeeesss_he_takes_it.ogg'))
-        self.window.bind("a", lambda event: self.play_audio('nobody_wants_to_chase.ogg'))
-        self.window.bind("s", lambda event: self.play_audio('oh_here_we_go_then.ogg'))
-        self.window.bind("d", lambda event: self.play_audio('oh_drama_here.ogg'))
-        self.window.bind("f", lambda event: self.play_audio('everyone_has_to_be_tired_here.ogg'))
-        self.window.bind("g", lambda event: self.play_audio('oh_nightmare_scenario.ogg'))
-        self.window.bind("h", lambda event: self.play_audio('oh_heartbreak_here.ogg'))
-        self.window.bind("z", lambda event: self.play_audio('absolutely_fantastic.ogg'))
-        self.window.bind("x", lambda event: self.play_audio('loved_that.ogg'))
-        self.window.bind("c", lambda event: self.play_audio('chuckle.ogg'))
-        self.window.bind("v", lambda event: self.play_audio('oh_chapeau_sir.ogg'))
+        self._w.bind("q", self.attaque_de_pierre_rolland)
+        self._w.bind("w", lambda event: self.play_audio('hes_racing_on.ogg'))
+        self._w.bind("e", lambda event: self.play_audio('fed_up_forming_alliances.ogg'))
+        self._w.bind("r", lambda event: self.play_audio('gets_his_head_down.ogg'))
+        self._w.bind("t", lambda event: self.play_audio('what_a_finish.ogg'))
+        self._w.bind("y", lambda event: self.play_audio('yeeesss_he_takes_it.ogg'))
+        self._w.bind("a", lambda event: self.play_audio('nobody_wants_to_chase.ogg'))
+        self._w.bind("s", lambda event: self.play_audio('oh_here_we_go_then.ogg'))
+        self._w.bind("d", lambda event: self.play_audio('oh_drama_here.ogg'))
+        self._w.bind("f", lambda event: self.play_audio('everyone_has_to_be_tired_here.ogg'))
+        self._w.bind("g", lambda event: self.play_audio('oh_nightmare_scenario.ogg'))
+        self._w.bind("h", lambda event: self.play_audio('oh_heartbreak_here.ogg'))
+        self._w.bind("z", lambda event: self.play_audio('absolutely_fantastic.ogg'))
+        self._w.bind("x", lambda event: self.play_audio('loved_that.ogg'))
+        self._w.bind("c", lambda event: self.play_audio('chuckle.ogg'))
+        self._w.bind("v", lambda event: self.play_audio('oh_chapeau_sir.ogg'))
 
     def activate(self):
-        self.window.mainloop()
+        self._w.mainloop()
 
     def draw_route(self, route, starting_orientation=0):
         position = np.array([[1000.0,-1000.0]])/SQUARE_SIZE
@@ -134,6 +134,8 @@ class Board(object):
         )
         func = lambda event: self.click_space(event, square, lane)
         self._c.tag_bind(square.spaces[lane], '<Button-1>', func)
+        func = lambda event: self.right_click_space(event, square, lane)
+        self._c.tag_bind(square.spaces[lane], '<ButtonPress-3>', func)
 
     def place_rider(self, rider, square, lane):
         if square.occupants[lane] is None:
@@ -146,6 +148,7 @@ class Board(object):
                 text=rider.symbol,
                 fill='#ffffff'
             )
+            self._c.lift(square.text[lane])
             self.mouse_state = None
 
     def pick_up_rider(self, rider):
@@ -167,7 +170,7 @@ class Board(object):
         if self.colour_index >= len(colour_sequence):
             return
         else:
-            self.window.after(494, lambda: self.change_background_with_delay(colour_sequence))
+            self._w.after(494, lambda: self.change_background_with_delay(colour_sequence))
 
     def attaque_de_pierre_rolland(self, event):
         self.play_audio('attaque_de_pierre_rolland.ogg')
@@ -175,7 +178,7 @@ class Board(object):
         self.colour_index = 0
         colour_sequence = ['#ffdd00', '#527439']*7 + ['#ffdd00', '#83c750']
 
-        self.window.after(1270, lambda: self.change_background_with_delay(colour_sequence))
+        self._w.after(1270, lambda: self.change_background_with_delay(colour_sequence))
 
     def play_audio(self, filename):
         self.pygame.mixer.music.load(os.path.join(self.audio_path, filename))
@@ -187,6 +190,29 @@ class Board(object):
             self.pick_up_rider(rider)
         else:
             self.place_rider(self.mouse_state, square, lane)
+
+    def right_click_space(self, event, square, lane):
+        rider = square.occupants[lane]
+        if rider is not None:
+            self.show_rider_information(event, rider)
+
+    def show_rider_information(self, event, rider):
+        text = self._c.create_text(
+            self._c.canvasx(event.x),
+            self._c.canvasy(event.y),
+            text=''.join(str(x) for x in rider.deck),
+            font=("Helvetica", 16),
+            fill='#000000',
+            anchor='sw'
+        )
+        self._c.bind('<B3-Motion>',
+            lambda e:
+                self._c.coords(text,
+                    self._c.canvasx(e.x),
+                    self._c.canvasy(e.y)
+                )
+        )
+        self._c.bind('<ButtonRelease-3>', lambda e: self._c.delete(text))
 
     def scroll_start(self, event):
         self._c.scan_mark(event.x, event.y)

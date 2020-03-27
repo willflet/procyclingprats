@@ -96,8 +96,11 @@ class Game(object):
                                  f'\nBearing of first tile? (Default 0 degrees)\n') or 0)
             route = Route.from_code(route_code)
 
+        markers = (input('\nWhat intermediate points are there?\n') or '').upper().split()
+
         print('\n',
-              route.profile,
+            route.profile,
+            "0''''''''10''''''''20''''''''30''''''''40''''''''50''''''''60''''''''70''''''''80",
             f'\nReady to race!\n',
             f'Teams are:',
             sep='\n'
@@ -119,6 +122,7 @@ class Game(object):
 
         self.board = Board()
         self.board.draw_route(route, rotation)
+        self.board.place_markers(markers)
 
         self.state = GameState(route, teams)
         self.initial_state = deepcopy(self.state)

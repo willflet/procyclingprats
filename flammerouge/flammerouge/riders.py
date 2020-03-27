@@ -42,7 +42,7 @@ class Team(object):
                     _riders.append(Puncheur(self))
                 elif rider.lower() in ('v', 'veteran'):
                     _riders.append(Veteran(self))
-                elif rider.lower() in ('d', 'descendeur'):
+                elif rider.lower() in ('t', 'temeraire'):
                     _riders.append(Descendeur(self))
             else:
                 _riders.append(rider)
@@ -145,11 +145,11 @@ class Veteran(Rider):
         super().__init__(starting_deck, team)
 
 
-class Descendeur(Rider):
+class Temeraire(Rider):
     """ The Sprinteur-type rider from the base game. """
 
     def __init__(self, colour):
-        self.name = 'descendeur'
-        self.symbol = 'D'
+        self.name = 'temeraire'
+        self.symbol = 'T'
         starting_deck = list(int(x) for x in '222333444666777')
         super().__init__(starting_deck, colour)

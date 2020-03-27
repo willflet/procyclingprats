@@ -82,22 +82,22 @@ class Board(object):
                 self.draw_space(square, lane, position, orientation)
 
             if square.base_colour != last_colour:
-                border_geom = np.array([
+                segment_boundary_geom = np.array([
                     [-0.15, (max(last_width, square.width)/2 + 0.3)*LANE_W],
                     [-0.15, (-max(last_width, square.width)/2 - 0.3)*LANE_W],
                     [0.15, (-max(last_width, square.width)/2 - 0.3)*LANE_W],
                     [0.15, (max(last_width, square.width)/2 + 0.3)*LANE_W]
                 ])
-                border_geom = (border_geom @ rotate + position) * SQUARE_SIZE
-                border_geom[:,-1] *= -1
+                segment_boundary_geom = (segment_boundary_geom @ rotate + position) * SQUARE_SIZE
+                segment_boundary_geom[:,-1] *= -1
                 colour = last_colour if last_colour != '#777777' else square.base_colour
-                border = self._c.create_polygon(
-                    border_geom.flatten().tolist(),
+                segment_boundary = self._c.create_polygon(
+                    segment_boundary_geom.flatten().tolist(),
                     fill=colour,
                     outline='#404040',
                     width=(SQUARE_SIZE/10)
                 )
-                self._c.lift(border)
+                self._c.lift(segment_boundary)
             last_colour = square.base_colour
             last_width = square.width
 
@@ -206,13 +206,69 @@ class Board(object):
             anchor='sw'
         )
         self._c.bind('<B3-Motion>',
-            lambda e:
-                self._c.coords(text,
-                    self._c.canvasx(e.x),
-                    self._c.canvasy(e.y)
-                )
+            lambda e: self._c.coords(
+                text,
+                self._c.canvasx(e.x),
+                self._c.canvasy(e.y)
+            )
         )
         self._c.bind('<ButtonRelease-3>', lambda e: self._c.delete(text))
+
+    def place_markers(self, annotations):
+        for annotation in annotations:
+            if annotation == 'S':
+                self.place_marker('#33aa00', annotation)
+            elif annotation in ('HC', '1', '2', '3', '4'):
+                self.place_marker('#cc3333', annotation)
+            elif annotation == 'P':
+                self.place_marker('#33aa00', annotation)
+
+    def place_marker(self, colour, text=None):
+        marker = self._c.create_oval(
+            1000, 1000, 1000 + LANE_W*SQUARE_SIZE, 1000 + LANE_W*SQUARE_SIZE,
+            fill=colour,
+            outline='#404040',
+            width=(SQUARE_SIZE/5)
+        )
+        self._c.lift(marker)
+
+        if text is not None:
+            textbox = self._c.create_text(
+                1000 + LANE_W*SQUARE_SIZE/2, 1000 + LANE_W*SQUARE_SIZE/2,
+                text=text,
+                fill='#ffffff',
+                tags=marker
+            )
+            self._c.tag_bind(textbox, '<ButtonPress-1>', lambda e: self.move_marker(e, marker, textbox))
+            self._c.tag_bind(textbox, '<Button-3>', lambda e: self.remove_marker(e, marker, textbox))
+        else:
+            textbox = None
+        self._c.tag_bind(marker, '<ButtonPress-1>', lambda e: self.move_marker(e, marker, textbox))
+        self._c.tag_bind(marker, '<Button-3>', lambda e: self.remove_marker(e, marker, textbox))
+
+    def move_marker(self, event, marker, textbox):
+        def f(e, m, t):
+            self._c.coords(
+                m,
+                self._c.canvasx(e.x) - LANE_W*SQUARE_SIZE/2,
+                self._c.canvasy(e.y) - LANE_W*SQUARE_SIZE/2,
+                self._c.canvasx(e.x) + LANE_W*SQUARE_SIZE/2,
+                self._c.canvasy(e.y) + LANE_W*SQUARE_SIZE/2
+            )
+            if t is not None:
+                self._c.coords(
+                    t,
+                    self._c.canvasx(e.x) + LANE_W*SQUARE_SIZE/2,
+                    self._c.canvasy(e.y) + LANE_W*SQUARE_SIZE/2
+                )
+
+        self._c.bind('<B1-Motion>', lambda e:f(e,marker, textbox))
+        self._c.bind('<ButtonRelease-1>', lambda event: self._c.bind('<B1-Motion>', self.scroll_move))
+
+    def remove_marker(self, event, marker, textbox):
+        self._c.delete(marker)
+        if textbox is not None:
+            self._c.delete(textbox)
 
     def scroll_start(self, event):
         self._c.scan_mark(event.x, event.y)

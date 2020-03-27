@@ -58,7 +58,7 @@ PELOTON_EXPANSION_TILES = {
     '6': 'ccCccc',
     '7': '==ccCc',
     '8': '===cCc',
-    '9': 'RR=_', #dummy last character
+    '9': 'RR=_', # dummy last character
 
     'v': 'SSSSSE',
     'w': '===b==',
@@ -68,7 +68,7 @@ PELOTON_EXPANSION_TILES = {
     'V': 'cccCc=',
     'W': 'cCc===',
     'X': 'ccCcc=',
-    'Y': 'EE='
+    'Y': 'EE=_' # dummy last character
 }
 
 

@@ -8,7 +8,7 @@ from .tiles import BASE_GAME_TILES, PELOTON_EXPANSION_TILES
 class Square(object):
     """ A space for cyclists side by side. """
 
-    def __init__(self, index, curve, width=2, special=None):
+    def __init__(self, index, curve='straight', width=2, special=None):
         self.index = index
         self.curve = curve
         self.width = width
@@ -199,6 +199,10 @@ class Route(object):
                 tile = Tile.from_shorthand(BASE_GAME_TILES[symbol], index)
             elif symbol.lower() in 'vwxyz123456789':
                 tile = Tile.from_shorthand(PELOTON_EXPANSION_TILES[symbol], index)
+            elif symbol == '+':
+                tile = Tile([Square(index), Square(index)])
+            elif symbol == '-':
+                tile = Tile([Square(index, width=1, special='uphill'), Square(index, width=1, special='uphill')])
             else:
                 continue
             tiles.append(tile)

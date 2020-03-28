@@ -101,15 +101,17 @@ class Game(object):
         print('\n',
             route.profile,
             "0''''''''10''''''''20''''''''30''''''''40''''''''50''''''''60''''''''70''''''''80",
-            f'\nReady to race!\n',
-            f'Teams are:',
+            f'\nReady to race! Riders are:',
             sep='\n'
         )
         for team in teams:
-            print(f'\n  {team.name} ({team.colour_name}):', end='\n    ')
-            print('\n    '.join(r.name for r in team.riders))
+            print(f'\n  {team.name.ljust(12)}:', end=' ')
+            print('\n                '.join(
+                f'{rider.symbol} ({rider.name})'
+                for rider in team.riders)
+            )
 
-        confirmation = input('\n\nIs this correct? (Y/n)\n')
+        confirmation = input('\nIs this correct? (Y/n)\n')
         while True:
             if confirmation.lower() in AFFIRMATIVE_RESPONSES:
                 break

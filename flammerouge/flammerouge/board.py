@@ -258,8 +258,8 @@ class Board(object):
             if t is not None:
                 self._c.coords(
                     t,
-                    self._c.canvasx(e.x) + LANE_W*SQUARE_SIZE/2,
-                    self._c.canvasy(e.y) + LANE_W*SQUARE_SIZE/2
+                    self._c.canvasx(e.x),
+                    self._c.canvasy(e.y)
                 )
 
         self._c.bind('<B1-Motion>', lambda e:f(e,marker, textbox))

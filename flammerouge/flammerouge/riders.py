@@ -7,7 +7,9 @@ COLOUR_DICT = dict(
     red='#990000',
     blue='#1133dd',
     green='#005500',
-    black='#000000'
+    black='#000000',
+    pink='#cc6688',
+    purple='#664488'
 )
 
 
@@ -43,7 +45,9 @@ class Team(object):
                 elif rider.lower() in ('v', 'veteran'):
                     _riders.append(Veteran(self))
                 elif rider.lower() in ('t', 'temeraire'):
-                    _riders.append(Descendeur(self))
+                    _riders.append(Temeraire(self))
+                elif rider.lower() in ('#', 'pelotonbot'):
+                    _riders.append(PelotonBot(self))
             else:
                 _riders.append(rider)
 
@@ -74,6 +78,14 @@ class Rider(object):
     def deck(self):
         return self._deck
 
+class PelotonBot(Rider):
+    """ A bot rider for the peloton expansion. """
+
+    def __init__(self, team):
+        self.name = 'pelotonbot'
+        self.symbol = '#'
+        starting_deck = list(int(x) for x in '3334445556667770')
+        super().__init__(starting_deck, team)
 
 class Rouleur(Rider):
     """ The Rouleur-type rider from the base game. """

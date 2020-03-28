@@ -46,7 +46,7 @@ class Game(object):
     def __init__(self):
         self.setup()
 
-    def setup(self, colour_choices=('red', 'blue', 'black', 'green')):
+    def setup(self, colour_choices=('red', 'blue', 'black', 'green', 'pink', 'purple')):
         teams = []
         for colour in colour_choices:
             using = input(f'\nIs someone using the {colour} team? (y/n)\n')

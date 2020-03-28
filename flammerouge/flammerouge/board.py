@@ -7,6 +7,8 @@ import os
 from .tiles import GEOMETRIES, STRAIGHT_L, LANE_W, SHARP_R, WIDE_R
 
 
+AUDIO_PATH = '/mnt/c/Users/magic/OneDrive/Documents/Code Projects/Projects/procyclingprats/flammerouge/commentary'
+
 SQUARE_SIZE = 17
 
 sin45 = (2**0.5)/2
@@ -17,7 +19,7 @@ cos22 = ((2 + (2**0.5))**0.5)/2
 
 class Board(object):
 
-    def __init__(self, audio_path='./commentary'):
+    def __init__(self, audio_path=AUDIO_PATH):
         self._w = tk.Tk()
         self._w.geometry(str(2000)+'x'+str(2000))
         self._c = tk.Canvas(self._w, width=2000, height=2000, bg='#83c750')

@@ -124,16 +124,21 @@ class Board(object):
         key = f'{square.curve}_{lane*2 - square.width + 3}'
         geometry = (GEOMETRIES[key] @ rotate + position) * SQUARE_SIZE
         geometry[:,1] *= -1
-        if square.special == 'breakaway' and lane != square.width-1:
+        outline_colour = '#404040'
+        if 'breakaway' in square.special and lane != square.width-1:
             colour = '#dddddd'
+        elif 'divided' in square.special and lane == 1:
+            outline_colour = None
+            colour = '#83c750'
         else:
             colour = square.base_colour
         square.spaces[lane] = self._c.create_polygon(
             geometry.flatten().tolist(),
             fill=colour,
-            outline='#404040',
+            outline=outline_colour,
             width=(SQUARE_SIZE/5)
         )
+        if lane == 1: self._c.lower(square.spaces[lane])
         func = lambda event: self.click_space(event, square, lane)
         self._c.tag_bind(square.spaces[lane], '<Button-1>', func)
         func = lambda event: self.right_click_space(event, square, lane)
@@ -158,8 +163,10 @@ class Board(object):
             square, lane = rider.position
             square.occupants[lane] = None
             rider._position = None
-            if square.special == 'breakaway' and lane != square.width-1:
+            if 'breakaway' in square.special and lane != square.width-1:
                 colour = '#dddddd'
+            elif 'divided' in square.special and lane == 1:
+                colour = '#83c750'
             else:
                 colour = square.base_colour
             self._c.itemconfig(square.spaces[lane], fill=colour)

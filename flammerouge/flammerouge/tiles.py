@@ -24,29 +24,29 @@ BASE_GAME_TILES = dict(
     r='==r',
     s='==r',
     t='==l',
-    u='=fffff',
+    u='=FFFFF',
 
     A='ssss==',
-    B='dddd==',
-    C='===uuu',
-    D='uuuuud',
-    E='uuR',
-    F='ddd===',
-    G='uuR',
-    H='ddr',
+    B='DDDD==',
+    C='===UUU',
+    D='UUUUUD',
+    E='UUR',
+    F='DDD===',
+    G='UUR',
+    H='DDr',
     I='==R',
     J='==L',
-    K='uul',
-    L='uuuddd',
-    M='==uuuu',
-    N='uuuuuu',
-    O='uuL',
-    P='ddL',
-    Q='uur',
-    R='uul',
+    K='UUl',
+    L='UUUDDD',
+    M='==UUUU',
+    N='UUUUUU',
+    O='UUL',
+    P='DDL',
+    Q='UUr',
+    R='UUl',
     S='==l',
     T='==r',
-    U='uuffff'
+    U='UUFFFF'
 )
 
 PELOTON_EXPANSION_TILES = {
@@ -60,15 +60,33 @@ PELOTON_EXPANSION_TILES = {
     '8': '===cCc',
     '9': 'RR=_', # dummy last character
 
-    'v': 'SSSSSE',
-    'w': '===b==',
-    'x': '==ccCc',
-    'y': 'cCcc==',
-    'z': 'cc====',
-    'V': 'cccCc=',
-    'W': 'cCc===',
-    'X': 'ccCcc=',
-    'Y': 'EE=_' # dummy last character
+    '!': 'SSSSSE',
+    '"': '===b==', '@': '===b==',
+    '£': '==ccCc',
+    '$': 'cCcc==',
+    '%': 'cc====',
+    '^': 'cccCc=',
+    '&': 'cCc===',
+    '*': 'ccCcc=',
+    '(': 'EE=_' # dummy last character
+}
+
+PROMOTIONAL_TILES = {
+    '+': '==',
+    '-': 'uu'
+}
+
+PERSONAL_TILES = {
+    'v': 'ddd===',
+    'w': 'CCDDDD',
+    'x': '=XXXX=',
+    'y': 'ddr',
+    'z': 'ddR',
+    'V': 'dddddd',
+    'W': 'ccdddd',
+    'X': 'CxxxxC',
+    'Y': 'ddl',
+    'Z': 'ddL'
 }
 
 
@@ -118,6 +136,12 @@ GEOMETRIES = dict(
         [(SHARP_R+LANE_W)*sin45, SHARP_R-(SHARP_R+LANE_W)*cos45],
         [SHARP_R*sin45, SHARP_R-SHARP_R*cos45]
     ]),
+    L_2=np.array([
+        [0, LANE_W/2],
+        [0, -LANE_W/2],
+        [(SHARP_R+LANE_W/2)*sin45, SHARP_R-(SHARP_R+LANE_W/2)*cos45],
+        [(SHARP_R-LANE_W/2)*sin45, SHARP_R-(SHARP_R-LANE_W/2)*cos45]
+    ]),
     L_3=np.array([
         [0, 0],
         [SHARP_R*sin45, -SHARP_R*cos45+SHARP_R],
@@ -129,6 +153,12 @@ GEOMETRIES = dict(
         [0, -LANE_W],
         [(SHARP_R-LANE_W)*sin45, -(SHARP_R-(SHARP_R-LANE_W)*cos45)],
         [SHARP_R*sin45, SHARP_R*cos45-SHARP_R]
+    ]),
+    R_2=np.array([
+        [0, LANE_W/2],
+        [0, -LANE_W/2],
+        [(SHARP_R-LANE_W/2)*sin45, -(SHARP_R-(SHARP_R-LANE_W/2)*cos45)],
+        [(SHARP_R+LANE_W/2)*sin45, -(SHARP_R-(SHARP_R+LANE_W/2)*cos45)]
     ]),
     R_3=np.array([
         [0, 0],
@@ -142,6 +172,12 @@ GEOMETRIES = dict(
         [(WIDE_R+LANE_W)*sin22, WIDE_R-(WIDE_R+LANE_W)*cos22],
         [WIDE_R*sin22, -WIDE_R*cos22+WIDE_R]
     ]),
+    l_2=np.array([
+        [0, LANE_W/2],
+        [0, -LANE_W/2],
+        [(WIDE_R+LANE_W/2)*sin22, WIDE_R-(WIDE_R+LANE_W/2)*cos22],
+        [(WIDE_R-LANE_W/2)*sin22, WIDE_R-(WIDE_R-LANE_W/2)*cos22]
+    ]),
     l_3=np.array([
         [0, 0],
         [WIDE_R*sin22, -WIDE_R*cos22+WIDE_R],
@@ -154,6 +190,12 @@ GEOMETRIES = dict(
         [(WIDE_R-LANE_W)*sin22, -(WIDE_R-(WIDE_R-LANE_W)*cos22)],
         [WIDE_R*sin22, WIDE_R*cos22-WIDE_R]
     ]),
+    r_2=np.array([
+        [0, LANE_W/2],
+        [0, -LANE_W/2],
+        [(WIDE_R-LANE_W/2)*sin22, -(WIDE_R-(WIDE_R-LANE_W/2)*cos22)],
+        [(WIDE_R+LANE_W/2)*sin22, -(WIDE_R-(WIDE_R+LANE_W/2)*cos22)]
+    ]),
     r_3=np.array([
         [0, 0],
         [WIDE_R*sin22, WIDE_R*cos22-WIDE_R],
@@ -161,3 +203,23 @@ GEOMETRIES = dict(
         [0, LANE_W]
     ])
 )
+
+
+straight_1=np.array([
+    [0, 0],
+    [0, -LANE_W],
+    [STRAIGHT_L, -LANE_W],
+    [STRAIGHT_L, 0]
+]),
+straight_2=np.array([
+    [0, LANE_W/2],
+    [0, -LANE_W/2],
+    [STRAIGHT_L, -LANE_W/2],
+    [STRAIGHT_L, LANE_W/2]
+]),
+straight_3=np.array([
+    [0, 0],
+    [STRAIGHT_L, 0],
+    [STRAIGHT_L, LANE_W],
+    [0, LANE_W]
+]),

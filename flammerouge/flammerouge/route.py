@@ -2,13 +2,13 @@
 
 import numpy as np
 from itertools import chain
-from .tiles import BASE_GAME_TILES, PELOTON_EXPANSION_TILES
+from .tiles import BASE_GAME_TILES, PELOTON_EXPANSION_TILES, PROMOTIONAL_TILES, PERSONAL_TILES
 
 
 class Square(object):
     """ A space for cyclists side by side. """
 
-    def __init__(self, index, curve='straight', width=2, special=None):
+    def __init__(self, index, curve='straight', width=2, special=''):
         self.index = index
         self.curve = curve
         self.width = width
@@ -21,28 +21,26 @@ class Square(object):
 
     @property
     def base_colour(self):
-        if self.special == 'uphill':
+        if 'uphill' in self.special:
             return '#bb6655'
-        elif self.special == 'downhill':
+        elif 'downhill' in self.special:
             return '#5588dd'
-        elif self.special == 'start':
+        elif 'start' in self.special:
             return '#dddddd'
-        elif self.special == 'finish':
+        elif 'finish' in self.special:
             return '#aa9922'
-        elif self.special == 'cobbles':
+        elif 'cobbles' in self.special:
             return '#6f5555'
-        elif self.special == 'feed zone':
+        elif 'feed zone' in self.special:
             return '#55cccc'
-        elif self.special == 'breakaway':
-            return '#777777'
         else:
             return '#777777'
 
     @property
     def profile_character(self):
-        if self.special == 'cobbles':
+        if 'cobbles' in self.special:
             return '⣀⠒¨'
-        elif self.special == 'feed zone':
+        elif 'feed zone' in self.special:
             return '‗═˭'
         else:
             return '_—‾'
@@ -53,26 +51,36 @@ class Square(object):
             return cls(index, curve)
         elif character == 'E':
             return cls(index, curve, width=3)
-        elif character == 'u':
+        elif character == 'U':
             return cls(index, curve, special='uphill')
-        elif character == 'd':
+        elif character == 'u':
+            return cls(index, curve, width=1, special='uphill')
+        elif character == 'D':
             return cls(index, curve, special='downhill')
+        elif character == 'd':
+            return cls(index, curve, width=1, special='downhill')
         elif character == 's':
             return cls(index, curve, special='start')
         elif character == 'S':
             return cls(index, curve, width=3, special='start')
-        elif character == 'f':
-            return cls(index, curve, special='finish')
         elif character == 'b':
             return cls(index, curve, special='breakaway')
         elif character == 'B':
             return cls(index, curve, width=3, special='breakaway')
+        elif character == 'r':
+            return cls(index, curve, special='feed zone')
         elif character == 'R':
             return cls(index, curve, width=3, special='feed zone')
         elif character == 'C':
             return cls(index, curve, special='cobbles')
         elif character == 'c':
             return cls(index, curve, width=1, special='cobbles')
+        elif character == 'X':
+            return cls(index, curve, width=3, special='divided')
+        elif character == 'x':
+            return cls(index, curve, width=3, special='divided cobbles')
+        elif character == 'F':
+            return cls(index, curve, special='finish')
         else:
             raise ValueError('unrecognized shorthand')
 
@@ -101,25 +109,26 @@ class Tile(object):
 
     @property
     def ascent(self):
-        return sum(square.special=='uphill' for square in self.squares)
+        return sum(('uphill' in square.special) for square in self.squares)
 
     @property
     def descent(self):
-        return sum(square.special=='downhill' for square in self.squares)
+        return sum(('downhill' in square.special) for square in self.squares)
 
     @classmethod
     def from_shorthand(cls, shorthand, index):
-        if len(shorthand) == 6:
-            return cls([Square.from_char(x, index+i)
-                        for i,x in enumerate(shorthand)])
-        elif len(shorthand) == 4:
-            return cls([Square.from_char(x, index+i)
-                        for i,x in enumerate(shorthand[:-1])])
-        else:
+        if len(shorthand) == 3:
             curve = shorthand[-1]
             squares = [Square.from_char(x, index+i, curve=curve)
                        for i,x in enumerate(shorthand[:-1])]
             return cls(squares, curve)
+        elif len(shorthand) == 4:
+            return cls([Square.from_char(x, index+i)
+                        for i,x in enumerate(shorthand[:-1])])
+        else:
+            return cls([Square.from_char(x, index+i)
+                        for i,x in enumerate(shorthand)])
+
 
 
 class Route(object):
@@ -143,7 +152,7 @@ class Route(object):
 
     @property
     def finish(self):
-        return min(square.index for square in self.squares if square.special == 'f')
+        return min(square.index for square in self.squares if 'finish' in square.special)
 
     @property
     def ascent(self):
@@ -158,14 +167,14 @@ class Route(object):
         square_heights = []
         km0 = 0
         for square in self.squares:
-            if square.special == 'start':
+            if 'start' in square.special:
                 square_heights.append(0)
                 km0 += 1
-            elif square.special == 'uphill':
+            elif 'uphill' in square.special:
                 square_heights.append(square_heights[-1] + 1)
-            elif square.special == 'downhill':
+            elif 'downhill' in square.special:
                 square_heights.append(square_heights[-1] - 1)
-            elif square.special == 'finish':
+            elif 'finish' in square.special:
                 break
             else:
                 square_heights.append(square_heights[-1])
@@ -189,20 +198,20 @@ class Route(object):
     def from_code(cls, code):
         """ Make a course from the lower/uppercase tile symbols. """
 
-        if len(set(code)) < len(code):
-            raise ValueError('repeated tile in code')
+        # if len(set(code)) < len(code):
+        #     raise ValueError('repeated tile in code')
 
         index = 0
         tiles = []
         for symbol in code:
             if symbol.lower() in 'abcdefghijklmnopqrstu':
                 tile = Tile.from_shorthand(BASE_GAME_TILES[symbol], index)
-            elif symbol.lower() in 'vwxyz123456789':
+            elif symbol in '123456789!"@£$%^&*("':
                 tile = Tile.from_shorthand(PELOTON_EXPANSION_TILES[symbol], index)
-            elif symbol == '+':
-                tile = Tile([Square(index), Square(index)])
-            elif symbol == '-':
-                tile = Tile([Square(index, width=1, special='uphill'), Square(index, width=1, special='uphill')])
+            elif symbol in '+-':
+                tile = Tile.from_shorthand(PROMOTIONAL_TILES[symbol], index)
+            elif symbol.lower() in 'vwxyz':
+                tile = Tile.from_shorthand(PERSONAL_TILES[symbol], index)
             else:
                 continue
             tiles.append(tile)

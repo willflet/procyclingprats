@@ -103,7 +103,7 @@ class Board(object):
             last_colour = square.base_colour
             last_width = square.width
 
-            if square.curve == 'straight':
+            if square.curve == 'S':
                 position += 1.05*([STRAIGHT_L, 0.0] @ rotate)
             elif square.curve == 'L':
                 position += 1.05*([SHARP_R*sin45, SHARP_R-SHARP_R*cos45] @ rotate)
@@ -130,6 +130,8 @@ class Board(object):
         elif 'divided' in square.special and lane == 1:
             outline_colour = None
             colour = '#83c750'
+        elif 'crosswind' in square.special and lane == 0:
+            colour = '#dd8833'
         else:
             colour = square.base_colour
         square.spaces[lane] = self._c.create_polygon(
@@ -138,7 +140,7 @@ class Board(object):
             outline=outline_colour,
             width=(SQUARE_SIZE/5)
         )
-        if lane == 1: self._c.lower(square.spaces[lane])
+        if lane*2 - square.width + 3 == 2: self._c.lower(square.spaces[lane])
         func = lambda event: self.click_space(event, square, lane)
         self._c.tag_bind(square.spaces[lane], '<Button-1>', func)
         func = lambda event: self.right_click_space(event, square, lane)
@@ -167,6 +169,8 @@ class Board(object):
                 colour = '#dddddd'
             elif 'divided' in square.special and lane == 1:
                 colour = '#83c750'
+            elif 'crosswind' in square.special and lane == 0:
+                colour = '#dd8833'
             else:
                 colour = square.base_colour
             self._c.itemconfig(square.spaces[lane], fill=colour)

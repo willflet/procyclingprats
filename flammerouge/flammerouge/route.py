@@ -8,7 +8,7 @@ from .tiles import BASE_GAME_TILES, PELOTON_EXPANSION_TILES, PROMOTIONAL_TILES, 
 class Square(object):
     """ A space for cyclists side by side. """
 
-    def __init__(self, index, curve='straight', width=2, special=''):
+    def __init__(self, index, curve='S', width=2, special=''):
         self.index = index
         self.curve = curve
         self.width = width
@@ -33,6 +33,8 @@ class Square(object):
             return '#6f5555'
         elif 'feed zone' in self.special:
             return '#55cccc'
+        elif 'crosswind' in self.special:
+            return '#eeaa66'
         else:
             return '#777777'
 
@@ -40,13 +42,17 @@ class Square(object):
     def profile_character(self):
         if 'cobbles' in self.special:
             return '⣀⠒¨'
-        elif 'feed zone' in self.special:
+        elif 'divided' in self.special:
             return '‗═˭'
+        elif 'crosswind' in self.special:
+            return '₊∗⁺'
+        elif 'feed zone' in self.special:
+            return 'ₒ∘°'
         else:
             return '_—‾'
 
     @classmethod
-    def from_char(cls, character, index, curve='straight'):
+    def from_char(cls, character, index, curve='S'):
         if character == '=':
             return cls(index, curve)
         elif character == 'E':
@@ -68,7 +74,7 @@ class Square(object):
         elif character == 'B':
             return cls(index, curve, width=3, special='breakaway')
         elif character == 'r':
-            return cls(index, curve, special='feed zone')
+            return cls(index, curve, width=3, special='divided feed zone')
         elif character == 'R':
             return cls(index, curve, width=3, special='feed zone')
         elif character == 'C':
@@ -79,6 +85,10 @@ class Square(object):
             return cls(index, curve, width=3, special='divided')
         elif character == 'x':
             return cls(index, curve, width=3, special='divided cobbles')
+        elif character == '^':
+            return cls(index, curve, width=3, special='divided uphill')
+        elif character == '/':
+            return cls(index, curve, width=3, special='crosswind')
         elif character == 'F':
             return cls(index, curve, special='finish')
         else:
@@ -88,7 +98,7 @@ class Square(object):
 class Tile(object):
     """ A section containing several squares. """
 
-    def __init__(self, squares, curve='straight'):
+    def __init__(self, squares, curve='S'):
         if isinstance(squares, str):
             self._squares = self._parse_shorthand(squares)
         else:
@@ -117,18 +127,10 @@ class Tile(object):
 
     @classmethod
     def from_shorthand(cls, shorthand, index):
-        if len(shorthand) == 3:
-            curve = shorthand[-1]
-            squares = [Square.from_char(x, index+i, curve=curve)
-                       for i,x in enumerate(shorthand[:-1])]
-            return cls(squares, curve)
-        elif len(shorthand) == 4:
-            return cls([Square.from_char(x, index+i)
-                        for i,x in enumerate(shorthand[:-1])])
-        else:
-            return cls([Square.from_char(x, index+i)
-                        for i,x in enumerate(shorthand)])
-
+        curve = shorthand[-1]
+        squares = [Square.from_char(x, index+i, curve=curve)
+                   for i,x in enumerate(shorthand[:-1])]
+        return cls(squares, curve)
 
 
 class Route(object):
@@ -164,8 +166,9 @@ class Route(object):
 
     @property
     def profile(self):
-        square_heights = []
-        km0 = 0
+        square_heights = [0]
+        km0 = -1
+
         for square in self.squares:
             if 'start' in square.special:
                 square_heights.append(0)
@@ -178,14 +181,22 @@ class Route(object):
                 break
             else:
                 square_heights.append(square_heights[-1])
+
         nadir = min(square_heights)
         lines = (max(square_heights) - nadir)//3 + 1
 
         char_grid = np.full([lines, self.distance+1], ' ')
-        for i, (square, h) in enumerate(zip(self.squares[km0-1:], square_heights[km0-1:])):
+        if km0 == -1:
+            line = (-nadir)//3
+            h_in_line = (-nadir)%3
+            char_grid[line, 0] = '_—‾'[h_in_line]
+
+        for i, (square, h) in enumerate(zip(self.squares, square_heights[1:])):
+            if i < km0: continue
+
             line = (h - nadir)//3
             h_in_line = (h - nadir)%3
-            char_grid[line, i] = square.profile_character[h_in_line]
+            char_grid[line, i-km0] = square.profile_character[h_in_line]
 
         profile_string = ''
         for line in char_grid[::-1]:
@@ -204,13 +215,13 @@ class Route(object):
         index = 0
         tiles = []
         for symbol in code:
-            if symbol.lower() in 'abcdefghijklmnopqrstu':
+            if symbol in BASE_GAME_TILES:
                 tile = Tile.from_shorthand(BASE_GAME_TILES[symbol], index)
-            elif symbol in '123456789!"@£$%^&*("':
+            elif symbol in PELOTON_EXPANSION_TILES:
                 tile = Tile.from_shorthand(PELOTON_EXPANSION_TILES[symbol], index)
-            elif symbol in '+-':
+            elif symbol in PROMOTIONAL_TILES:
                 tile = Tile.from_shorthand(PROMOTIONAL_TILES[symbol], index)
-            elif symbol.lower() in 'vwxyz':
+            elif symbol in PERSONAL_TILES:
                 tile = Tile.from_shorthand(PERSONAL_TILES[symbol], index)
             else:
                 continue

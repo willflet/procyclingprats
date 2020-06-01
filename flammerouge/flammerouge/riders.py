@@ -46,8 +46,22 @@ class Team(object):
                     _riders.append(Veteran(self))
                 elif rider.lower() in ('t', 'temeraire'):
                     _riders.append(Temeraire(self))
+                elif rider.lower() in ('d', 'domestique'):
+                    _riders.append(Temeraire(self))
+                elif rider.lower() in ('c', 'classiciste'):
+                    _riders.append(Temeraire(self))
+                elif rider.lower() in ('e', 'echappeur'):
+                    _riders.append(Temeraire(self))
+                elif rider.lower() in ('a', 'autonome'):
+                    _riders.append(Temeraire(self))
                 elif rider.lower() in ('#', 'pelotonbot'):
                     _riders.append(PelotonBot(self))
+                elif rider.lower() in ('@', 'breakawaybot'):
+                    _riders.append(BreakawayBot(self))
+                elif rider.lower() in ('x', 'xbot'):
+                    _riders.append(XBot(self))
+                elif rider.lower() in ('y', 'ybot'):
+                    _riders.append(YBot(self))
             else:
                 _riders.append(rider)
 
@@ -78,6 +92,7 @@ class Rider(object):
     def deck(self):
         return self._deck
 
+
 class PelotonBot(Rider):
     """ A bot rider for the peloton expansion. """
 
@@ -87,8 +102,39 @@ class PelotonBot(Rider):
         starting_deck = list(int(x) for x in '3334445556667770')
         super().__init__(starting_deck, team)
 
+
+class BreakawayBot(Rider):
+    """ A bot rider for the peloton expansion. """
+
+    def __init__(self, team):
+        self.name = 'pelotonbot'
+        self.symbol = '@'
+        starting_deck = list(int(x) for x in '222333444555999')
+        super().__init__(starting_deck, team)
+
+
+class XBot(Rider):
+    """ A bot rider for an AI team. """
+
+    def __init__(self, team):
+        self.name = 'xbot'
+        self.symbol = 'X'
+        starting_deck = list(int(x) for x in '000000000000000')
+        super().__init__(starting_deck, team)
+
+
+class YBot(Rider):
+    """ A bot rider for an AI team. """
+
+    def __init__(self, team):
+        self.name = 'ybot'
+        self.symbol = 'Y'
+        starting_deck = list(int(x) for x in '000000000000000')
+        super().__init__(starting_deck, team)
+
+
 class Rouleur(Rider):
-    """ The Rouleur-type rider from the base game. """
+    """ The diesel engine. """
 
     def __init__(self, team):
         self.name = 'rouleur'
@@ -98,7 +144,7 @@ class Rouleur(Rider):
 
 
 class Sprinteur(Rider):
-    """ The Sprinteur-type rider from the base game. """
+    """ The speed freak. """
 
     def __init__(self, colour):
         self.name = 'sprinteur'
@@ -108,7 +154,7 @@ class Sprinteur(Rider):
 
 
 class Baroudeur(Rider):
-    """ The Rouleur-type rider from the base game. """
+    """ The breakaway specialist. """
 
     def __init__(self, team):
         self.name = 'baroudeur'
@@ -118,7 +164,7 @@ class Baroudeur(Rider):
 
 
 class Finisseur(Rider):
-    """ The Sprinteur-type rider from the base game. """
+    """ The opportunist. """
 
     def __init__(self, colour):
         self.name = 'finisseur'
@@ -128,7 +174,7 @@ class Finisseur(Rider):
 
 
 class Grimpeur(Rider):
-    """ The Rouleur-type rider from the base game. """
+    """ The mountain goat. """
 
     def __init__(self, team):
         self.name = 'grimpeur'
@@ -138,7 +184,7 @@ class Grimpeur(Rider):
 
 
 class Puncheur(Rider):
-    """ The Sprinteur-type rider from the base game. """
+    """ The fireworks. """
 
     def __init__(self, colour):
         self.name = 'puncheur'
@@ -148,7 +194,7 @@ class Puncheur(Rider):
 
 
 class Veteran(Rider):
-    """ The Rouleur-type rider from the base game. """
+    """ The old hand. """
 
     def __init__(self, team):
         self.name = 'veteran'
@@ -158,10 +204,50 @@ class Veteran(Rider):
 
 
 class Temeraire(Rider):
-    """ The Sprinteur-type rider from the base game. """
+    """ The daredevil. """
 
     def __init__(self, colour):
         self.name = 'temeraire'
         self.symbol = 'T'
         starting_deck = list(int(x) for x in '222333444666777')
+        super().__init__(starting_deck, colour)
+
+
+class Domestique(Rider):
+    """ The trusty lieutenant. """
+
+    def __init__(self, colour):
+        self.name = 'domestique'
+        self.symbol = 'D'
+        starting_deck = list(int(x) for x in '333444455556666')
+        super().__init__(starting_deck, colour)
+
+
+class Classiciste(Rider):
+    """ The classics specialist. """
+
+    def __init__(self, colour):
+        self.name = 'classiciste'
+        self.symbol = 'C'
+        starting_deck = list(int(x) for x in '333344445555789')
+        super().__init__(starting_deck, colour)
+
+
+class Echappeur(Rider):
+    """ The local hero. """
+
+    def __init__(self, colour):
+        self.name = 'echappeur'
+        self.symbol = 'E'
+        starting_deck = list(int(x) for x in '222233334567888')
+        super().__init__(starting_deck, colour)
+
+
+class Autonome(Rider):
+    """ The all-rounder. """
+
+    def __init__(self, colour):
+        self.name = 'autonome'
+        self.symbol = 'A'
+        starting_deck = list(int(x) for x in '222444555666777')
         super().__init__(starting_deck, colour)

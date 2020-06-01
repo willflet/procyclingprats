@@ -4,89 +4,98 @@ import numpy as np
 
 
 BASE_GAME_TILES = dict(
-    a='sssss=',
-    b='======',
-    c='======',
-    d='======',
+    a='sssss=S',
+    b='======S',
+    c='======S',
+    d='======S',
     e='==L',
-    f='======',
+    f='======S',
     g='==L',
     h='==l',
     i='==L',
     j='==R',
     k='==r',
-    l='======',
-    m='======',
-    n='======',
+    l='======S',
+    m='======S',
+    n='======S',
     o='==R',
     p='==R',
     q='==l',
     r='==r',
     s='==r',
     t='==l',
-    u='=FFFFF',
+    u='=FFFFFS',
 
-    A='ssss==',
-    B='DDDD==',
-    C='===UUU',
-    D='UUUUUD',
+    A='ssss==S',
+    B='DDDD==S',
+    C='===UUUS',
+    D='UUUUUDS',
     E='UUR',
-    F='DDD===',
+    F='DDD===S',
     G='UUR',
     H='DDr',
     I='==R',
     J='==L',
     K='UUl',
-    L='UUUDDD',
-    M='==UUUU',
-    N='UUUUUU',
+    L='UUUDDDS',
+    M='==UUUUS',
+    N='UUUUUUS',
     O='UUL',
     P='DDL',
     Q='UUr',
     R='UUl',
     S='==l',
     T='==r',
-    U='UUFFFF'
+    U='UUFFFFS'
 )
 
 PELOTON_EXPANSION_TILES = {
-    '1': 'SSSSEE',
-    '2': 'EEEBE=',
-    '3': 'RRRRR=',
-    '4': 'RRRRR=',
-    '5': 'cCcCcc',
-    '6': 'ccCccc',
-    '7': '==ccCc',
-    '8': '===cCc',
-    '9': 'RR=_', # dummy last character
+    '1': 'SSSSEES',
+    '2': 'EEEBE=S',
+    '3': 'RRRRR=S',
+    '4': 'RRRRR=S',
+    '5': 'cCcCccS',
+    '6': 'ccCcccS',
+    '7': '==ccCcS',
+    '8': '===cCcS',
+    '9': 'RR=S',
 
-    '!': 'SSSSSE',
-    '"': '===b==', '@': '===b==',
-    '£': '==ccCc',
-    '$': 'cCcc==',
-    '%': 'cc====',
-    '^': 'cccCc=',
-    '&': 'cCc===',
-    '*': 'ccCcc=',
-    '(': 'EE=_' # dummy last character
+    '!': 'SSSSSES',
+    '"': '===b==S', '@': '===b==S',
+    '£': '==ccCcS',
+    '$': 'cCcc==S',
+    '%': 'cc====S',
+    '^': 'cccCc=S',
+    '&': 'cCc===S',
+    '*': 'ccCcc=S',
+    '(': 'EE=S'
 }
 
 PROMOTIONAL_TILES = {
-    '+': '==',
-    '-': 'uu'
+    '+': '==S',
+    '-': 'uuS'
 }
 
 PERSONAL_TILES = {
-    'v': 'ddd===',
-    'w': 'CCDDDD',
-    'x': '=XXXX=',
+    'v': 'ddd===S',
+    'w': 'CCDDDDS',
+    'x': '=XXXX=S',
     'y': 'ddr',
     'z': 'ddR',
-    'V': 'dddddd',
-    'W': 'ccdddd',
-    'X': 'CxxxxC',
+    'V': 'ddddddS',
+    'W': 'ccddddS',
+    'X': '=^^^^=S',
     'Y': 'ddl',
-    'Z': 'ddL'
+    'Z': 'ddL',
+
+    '#': '=rrrr=S',
+    '~': 'CxxxxCS',
+
+    '/': '//////S',
+    '{': 'RRR',
+    '}': 'RRL',
+    '[': 'RRr',
+    ']': 'RRl',
 }
 
 
@@ -100,35 +109,41 @@ sin22 = ((2 - (2**0.5))**0.5)/2
 cos22 = ((2 + (2**0.5))**0.5)/2
 
 GEOMETRIES = dict(
-    straight_0=np.array([
+    S_0=np.array([
         [0, -LANE_W/2],
         [0, -3*LANE_W/2],
         [STRAIGHT_L, -3*LANE_W/2],
         [STRAIGHT_L, -LANE_W/2]
     ]),
-    straight_1=np.array([
+    S_1=np.array([
         [0, 0],
         [0, -LANE_W],
         [STRAIGHT_L, -LANE_W],
         [STRAIGHT_L, 0]
     ]),
-    straight_2=np.array([
+    S_2=np.array([
         [0, LANE_W/2],
         [0, -LANE_W/2],
         [STRAIGHT_L, -LANE_W/2],
         [STRAIGHT_L, LANE_W/2]
     ]),
-    straight_3=np.array([
+    S_3=np.array([
+        [0, LANE_W],
         [0, 0],
         [STRAIGHT_L, 0],
-        [STRAIGHT_L, LANE_W],
-        [0, LANE_W]
+        [STRAIGHT_L, LANE_W]
     ]),
-    straight_4=np.array([
+    S_4=np.array([
         [0, 3*LANE_W/2],
         [0, LANE_W/2],
         [STRAIGHT_L, LANE_W/2],
         [STRAIGHT_L, 3*LANE_W/2]
+    ]),
+    L_0=np.array([
+        [0, -LANE_W/2],
+        [0, -3*LANE_W/2],
+        [(SHARP_R+3*LANE_W/2)*sin45, SHARP_R-(SHARP_R+3*LANE_W/2)*cos45],
+        [(SHARP_R+LANE_W/2)*sin45, SHARP_R-(SHARP_R+LANE_W/2)*cos45]
     ]),
     L_1=np.array([
         [0, 0],
@@ -143,10 +158,22 @@ GEOMETRIES = dict(
         [(SHARP_R-LANE_W/2)*sin45, SHARP_R-(SHARP_R-LANE_W/2)*cos45]
     ]),
     L_3=np.array([
+        [0, LANE_W],
         [0, 0],
         [SHARP_R*sin45, -SHARP_R*cos45+SHARP_R],
-        [(SHARP_R-LANE_W)*sin45, SHARP_R-(SHARP_R-LANE_W)*cos45],
-        [0, LANE_W],
+        [(SHARP_R-LANE_W)*sin45, SHARP_R-(SHARP_R-LANE_W)*cos45]
+    ]),
+    L_4=np.array([
+        [0, 3*LANE_W/2],
+        [0, LANE_W/2],
+        [(SHARP_R-LANE_W/2)*sin45, SHARP_R-(SHARP_R-LANE_W/2)*cos45],
+        [(SHARP_R-3*LANE_W/2)*sin45, SHARP_R-(SHARP_R-3*LANE_W/2)*cos45]
+    ]),
+    R_0=np.array([
+        [0, -LANE_W/2],
+        [0, -3*LANE_W/2],
+        [(SHARP_R-3*LANE_W/2)*sin45, -(SHARP_R-(SHARP_R-3*LANE_W/2)*cos45)],
+        [(SHARP_R-LANE_W/2)*sin45, -(SHARP_R-(SHARP_R-LANE_W/2)*cos45)]
     ]),
     R_1=np.array([
         [0, 0],
@@ -161,10 +188,22 @@ GEOMETRIES = dict(
         [(SHARP_R+LANE_W/2)*sin45, -(SHARP_R-(SHARP_R+LANE_W/2)*cos45)]
     ]),
     R_3=np.array([
+        [0, LANE_W],
         [0, 0],
         [SHARP_R*sin45, SHARP_R*cos45-SHARP_R],
-        [(SHARP_R+LANE_W)*sin45, -(SHARP_R-(SHARP_R+LANE_W)*cos45)],
-        [0, LANE_W]
+        [(SHARP_R+LANE_W)*sin45, -(SHARP_R-(SHARP_R+LANE_W)*cos45)]
+    ]),
+    R_4=np.array([
+        [0, 3*LANE_W/2],
+        [0, LANE_W/2],
+        [(SHARP_R+LANE_W/2)*sin45, -(SHARP_R-(SHARP_R+LANE_W/2)*cos45)],
+        [(SHARP_R+3*LANE_W/2)*sin45, -(SHARP_R-(SHARP_R+3*LANE_W/2)*cos45)],
+    ]),
+    l_0=np.array([
+        [0, -LANE_W/2],
+        [0, -3*LANE_W/2],
+        [(WIDE_R+3*LANE_W/2)*sin22, WIDE_R-(WIDE_R+3*LANE_W/2)*cos22],
+        [(WIDE_R+LANE_W/2)*sin22, WIDE_R-(WIDE_R+LANE_W/2)*cos22]
     ]),
     l_1=np.array([
         [0, 0],
@@ -179,10 +218,22 @@ GEOMETRIES = dict(
         [(WIDE_R-LANE_W/2)*sin22, WIDE_R-(WIDE_R-LANE_W/2)*cos22]
     ]),
     l_3=np.array([
+        [0, LANE_W],
         [0, 0],
         [WIDE_R*sin22, -WIDE_R*cos22+WIDE_R],
-        [(WIDE_R-LANE_W)*sin22, WIDE_R-(WIDE_R-LANE_W)*cos22],
-        [0, LANE_W],
+        [(WIDE_R-LANE_W)*sin22, WIDE_R-(WIDE_R-LANE_W)*cos22]
+    ]),
+    l_4=np.array([
+        [0, 3*LANE_W/2],
+        [0, LANE_W/2],
+        [(WIDE_R-LANE_W/2)*sin22, WIDE_R-(WIDE_R-LANE_W/2)*cos22],
+        [(WIDE_R-3*LANE_W/2)*sin22, WIDE_R-(WIDE_R-3*LANE_W/2)*cos22]
+    ]),
+    r_0=np.array([
+        [0, -LANE_W/2],
+        [0, -3*LANE_W/2],
+        [(WIDE_R-3*LANE_W/2)*sin22, -(WIDE_R-(WIDE_R-3*LANE_W/2)*cos22)],
+        [(WIDE_R-LANE_W/2)*sin22, -(WIDE_R-(WIDE_R-LANE_W/2)*cos22)]
     ]),
     r_1=np.array([
         [0, 0],
@@ -197,29 +248,15 @@ GEOMETRIES = dict(
         [(WIDE_R+LANE_W/2)*sin22, -(WIDE_R-(WIDE_R+LANE_W/2)*cos22)]
     ]),
     r_3=np.array([
+        [0, LANE_W],
         [0, 0],
         [WIDE_R*sin22, WIDE_R*cos22-WIDE_R],
-        [(WIDE_R+LANE_W)*sin22, -(WIDE_R-(WIDE_R+LANE_W)*cos22)],
-        [0, LANE_W]
-    ])
+        [(WIDE_R+LANE_W)*sin22, -(WIDE_R-(WIDE_R+LANE_W)*cos22)]
+    ]),
+    r_4=np.array([
+        [0, 3*LANE_W/2],
+        [0, LANE_W/2],
+        [(WIDE_R+LANE_W/2)*sin22, -(WIDE_R-(WIDE_R+LANE_W/2)*cos22)],
+        [(WIDE_R+3*LANE_W/2)*sin22, -(WIDE_R-(WIDE_R+3*LANE_W/2)*cos22)],
+    ]),
 )
-
-
-straight_1=np.array([
-    [0, 0],
-    [0, -LANE_W],
-    [STRAIGHT_L, -LANE_W],
-    [STRAIGHT_L, 0]
-]),
-straight_2=np.array([
-    [0, LANE_W/2],
-    [0, -LANE_W/2],
-    [STRAIGHT_L, -LANE_W/2],
-    [STRAIGHT_L, LANE_W/2]
-]),
-straight_3=np.array([
-    [0, 0],
-    [STRAIGHT_L, 0],
-    [STRAIGHT_L, LANE_W],
-    [0, LANE_W]
-]),

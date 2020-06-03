@@ -81,6 +81,29 @@ COURSES = {
     '2019.19':                          ('!2tisCPJbE9NOLFgHqMKRU', 270),
     '2019.20':                          ('12sCOLPFi9QDHBJKN-EGU', 180),
     '2019.21':                          ('!2eg6&3khfPnOmisru', 0),
+
+    '2020.1':                           ('!2DFjGKBtI3SoERPLHmu', 0),
+    '2020.2':                           ('!2CELHQDBjI9ngOFkRPsu', 0),
+    '2020.3':                           ('12h87Is5$jb3ktcrdou', 0),
+    '2020.4':                           ('!2ihEj(o£&Gts4kr8%pqNU)', 135),
+    '2020.5':                           ('12bihjgelk38%op9qrmu', 180),
+    '2020.6':                           ('12bsjlI3tCRo9EQDFMU', 0),
+    '2020.7':                           ('12QjH7*IOPt9S£%RFebu', 0),
+    '2020.8':                           ('12itSDFe3JCKQLPHONBu', 0),
+    '2020.9':                           ('12jsIt3MEQLDHB90RKGpFu', 180),
+    '2020.10':                          ('!2bcefgkiJqoptrsh9dlmu', 0),
+    '2020.11':                          ('!2noJsbI3p8&rg9eqcdu', 45),
+    '2020.12':                          ('12CHimeJ9TbnQPorksDFu', 0),
+    '2020.13':                          ('12MPlOKFEGBiRJHQDtSNU', 180),
+    '2020.14':                          ('12sDPiQLJt9onebCHkGFu', 0),
+    '2020.15':                          ('!2tCLPFi3JSEGDHBqKONRU', 0),
+    '2020.16':                          ('!2lEjSMQGPBICHoRKDTfU', 315),
+    '2020.17':                          ('12sjItCKEDPHBg9OQRNMU', 0),
+    '2020.18':                          ('12sKDBEGLPjMHFi9o5&u', 0),
+    '2020.19':                          ('128&js£%o4gbIplrmu', 0),
+    '2020.20':                          ('!2tnjsbEcQPkMU', 180),
+    '2020.21':                          ('12eg7^3khbPcOdStju', 0)
+
 }
 
 

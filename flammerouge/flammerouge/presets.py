@@ -102,9 +102,13 @@ COURSES = {
     '2020.18':                          ('12sKDBEGLPjMHFi9o5&u', 0),
     '2020.19':                          ('128&js£%o4gbIplrmu', 0),
     '2020.20':                          ('!2tnjsbEcQPkMU', 180),
-    '2020.21':                          ('12eg7^3khbPcOdStju', 0)
+    '2020.21':                          ('12eg7^3khbPcOdStju', 0),
+
+    'will.1' :                          ('++++|+++++G2G1GC======A(A(A<A<AAAF(F(DD=(=(=)=)=========>=>=S==>=>:::ffff::::(:(mmmwD>D>======Cc)c)CG|++++++', 0)
 
 }
+
+
 
 
 LONG_STAGES = {

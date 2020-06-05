@@ -36,6 +36,34 @@ class Board(object):
         self.pygame.mixer.init(frequency=70000)
         self._w.focus_set()
 
+    @staticmethod
+    def get_colour(square, lane):
+        colour = square.base_colour
+        outline_colour = '#404040'
+        if 'breakaway' in square.special:
+            rgb = ['0x'+x for x in (
+                square.base_colour[1:3],
+                square.base_colour[3:5],
+                square.base_colour[5:]
+            )]
+            lighter_rgb = [hex(int(0.5*int(x,16) + 0.5*255)) for x in rgb]
+            if lane == 0:
+                colour = '#'+''.join(x[2:] for x in lighter_rgb)
+            elif lane == 1 and 'breakaway2' in square.special:
+                colour = '#'+''.join(x[2:] for x in lighter_rgb)
+            elif lane == 2 and 'breakaway3' in square.special:
+                colour = '#'+''.join(x[2:] for x in lighter_rgb)
+            else:
+                colour = square.base_colour
+
+        elif 'divided' in square.special and lane == 1:
+            outline_colour = None
+            colour = '#83c750'
+        elif 'crosswind' in square.special and lane == 0:
+            colour = '#dd8833'
+
+        return colour, outline_colour
+
     def make_soundboard(self):
         self._w.bind("q", self.attaque_de_pierre_rolland)
         self._w.bind("w", lambda event: self.play_audio('hes_racing_on.ogg'))
@@ -124,16 +152,7 @@ class Board(object):
         key = f'{square.curve}_{lane*2 - square.width + 3}'
         geometry = (GEOMETRIES[key] @ rotate + position) * SQUARE_SIZE
         geometry[:,1] *= -1
-        outline_colour = '#404040'
-        if 'breakaway' in square.special and lane != square.width-1:
-            colour = '#dddddd'
-        elif 'divided' in square.special and lane == 1:
-            outline_colour = None
-            colour = '#83c750'
-        elif 'crosswind' in square.special and lane == 0:
-            colour = '#dd8833'
-        else:
-            colour = square.base_colour
+        colour, outline_colour = self.get_colour(square, lane)
         square.spaces[lane] = self._c.create_polygon(
             geometry.flatten().tolist(),
             fill=colour,
@@ -165,14 +184,7 @@ class Board(object):
             square, lane = rider.position
             square.occupants[lane] = None
             rider._position = None
-            if 'breakaway' in square.special and lane != square.width-1:
-                colour = '#dddddd'
-            elif 'divided' in square.special and lane == 1:
-                colour = '#83c750'
-            elif 'crosswind' in square.special and lane == 0:
-                colour = '#dd8833'
-            else:
-                colour = square.base_colour
+            colour, _ = self.get_colour(square, lane)
             self._c.itemconfig(square.spaces[lane], fill=colour)
             self._c.delete(square.text[lane])
             self.mouse_state = rider
@@ -210,10 +222,15 @@ class Board(object):
             self.show_rider_information(event, rider)
 
     def show_rider_information(self, event, rider):
+        if rider.team.personalized:
+            info = rider.name+'\n'+''.join(str(x) for x in rider.deck)+'\n'+rider.team.name
+        else:
+            info = rider.name+'\n'+''.join(str(x) for x in rider.deck)+'\n'+rider.__doc__.lstrip()
+
         text = self._c.create_text(
             self._c.canvasx(event.x),
             self._c.canvasy(event.y),
-            text=''.join(str(x) for x in rider.deck),
+            text=info,
             font=("Helvetica", 16),
             fill='#000000',
             anchor='sw'

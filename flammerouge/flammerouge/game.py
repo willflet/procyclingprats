@@ -70,7 +70,7 @@ class Game(object):
                                     f'\nExpected two riders (space-separated); try again.\n'
                                 ) or 'r s'
                             ).split()
-                    teams.append(Team(colour, riders))
+                    teams.append(Team(colour, riders, personalized=True))
                     break
                 elif using.lower() in NEGATIVE_RESPONSES:
                     break

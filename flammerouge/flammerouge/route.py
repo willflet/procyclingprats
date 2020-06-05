@@ -5,12 +5,15 @@ from itertools import chain
 from .tiles import BASE_GAME_TILES, PELOTON_EXPANSION_TILES, PROMOTIONAL_TILES, PERSONAL_TILES
 
 
+CURVES = {'>':'L',')':'l','|':'S','(':'r','<':'R'}
+
+
 class Square(object):
     """ A space for cyclists side by side. """
 
-    def __init__(self, index, curve='S', width=2, special=''):
+    def __init__(self, index, curve='|', width=2, special=''):
         self.index = index
-        self.curve = curve
+        self.curve = CURVES[curve]
         self.width = width
         self.special = special
 
@@ -52,45 +55,81 @@ class Square(object):
             return '_—‾'
 
     @classmethod
-    def from_char(cls, character, index, curve='S'):
-        if character == '=':
-            return cls(index, curve)
-        elif character == 'E':
+    def from_char(cls, character, index, curve='|'):
+        # Flat
+        if character == '-':
+            return cls(index, curve, width=1)
+        elif character == '=':
+            return cls(index, curve, width=2)
+        elif character == '+':
             return cls(index, curve, width=3)
-        elif character == 'U':
-            return cls(index, curve, special='uphill')
-        elif character == 'u':
+        elif character == ':':
+            return cls(index, curve, width=3, special='divided')
+
+        # Ascent / Uphill
+        elif character == 'a' or character == 'u':
             return cls(index, curve, width=1, special='uphill')
-        elif character == 'D':
-            return cls(index, curve, special='downhill')
-        elif character == 'd':
+        elif character == 'A' or character == 'U':
+            return cls(index, curve, width=2, special='uphill')
+        elif character == 'M':
+            return cls(index, curve, width=3, special='uphill')
+        elif character == 'm':
+            return cls(index, curve, width=3, special='divided uphill')
+
+        # Descent / Downhill
+        elif character == 'd' or character == 'v':
             return cls(index, curve, width=1, special='downhill')
-        elif character == 's':
-            return cls(index, curve, special='start')
-        elif character == 'S':
-            return cls(index, curve, width=3, special='start')
-        elif character == 'b':
-            return cls(index, curve, special='breakaway')
-        elif character == 'B':
-            return cls(index, curve, width=3, special='breakaway')
-        elif character == 'r':
-            return cls(index, curve, width=3, special='divided feed zone')
-        elif character == 'R':
-            return cls(index, curve, width=3, special='feed zone')
-        elif character == 'C':
-            return cls(index, curve, special='cobbles')
+        elif character == 'D' or character == 'V':
+            return cls(index, curve, width=2, special='downhill')
+        elif character == 'W':
+            return cls(index, curve, width=3, special='downhill')
+        elif character == 'w':
+            return cls(index, curve, width=3, special='divided downhill')
+
+        # Cobbles / Gravel
         elif character == 'c':
             return cls(index, curve, width=1, special='cobbles')
-        elif character == 'X':
-            return cls(index, curve, width=3, special='divided')
-        elif character == 'x':
+        elif character == 'C':
+            return cls(index, curve, width=2, special='cobbles')
+        elif character == 'G':
+            return cls(index, curve, width=3, special='cobbles')
+        elif character == 'g':
             return cls(index, curve, width=3, special='divided cobbles')
-        elif character == '^':
-            return cls(index, curve, width=3, special='divided uphill')
-        elif character == '/':
-            return cls(index, curve, width=3, special='crosswind')
+
+        # Feed zone / Refueling
+        elif character == 'r':
+            return cls(index, curve, width=1, special='feed zone')
+        elif character == 'R':
+            return cls(index, curve, width=2, special='feed zone')
         elif character == 'F':
-            return cls(index, curve, special='finish')
+            return cls(index, curve, width=3, special='feed zone')
+        elif character == 'f':
+            return cls(index, curve, width=3, special='divided feed zone')
+
+        # Crosswind
+        elif character == 'x':
+            return cls(index, curve, width=2, special='crosswind')
+        elif character == 'X':
+            return cls(index, curve, width=3, special='crosswind')
+
+        # Start / Finish / Breakaway
+        elif character == '(':
+            return cls(index, curve, width=1, special='start')
+        elif character == '[':
+            return cls(index, curve, width=2, special='start')
+        elif character == '{':
+            return cls(index, curve, width=3, special='start')
+        elif character == ')':
+            return cls(index, curve, width=1, special='finish')
+        elif character == ']':
+            return cls(index, curve, width=2, special='finish')
+        elif character == '}':
+            return cls(index, curve, width=3, special='finish')
+        elif character == 'b':
+            return cls(index, curve, width=2, special='breakaway1')
+        elif character == 'B':
+            return cls(index, curve, width=3, special='breakaway2')
+
         else:
             raise ValueError('unrecognized shorthand')
 
@@ -98,20 +137,12 @@ class Square(object):
 class Tile(object):
     """ A section containing several squares. """
 
-    def __init__(self, squares, curve='S'):
-        if isinstance(squares, str):
-            self._squares = self._parse_shorthand(squares)
-        else:
-            self._squares = squares
-        self._curve = curve
+    def __init__(self, squares):
+        self._squares = squares
 
     @property
     def squares(self):
         return self._squares
-
-    @property
-    def curve(self):
-        return self._curve
 
     @property
     def distance(self):
@@ -130,7 +161,7 @@ class Tile(object):
         curve = shorthand[-1]
         squares = [Square.from_char(x, index+i, curve=curve)
                    for i,x in enumerate(shorthand[:-1])]
-        return cls(squares, curve)
+        return cls(squares)
 
 
 class Route(object):
@@ -214,18 +245,43 @@ class Route(object):
 
         index = 0
         tiles = []
-        for symbol in code:
-            if symbol in BASE_GAME_TILES:
-                tile = Tile.from_shorthand(BASE_GAME_TILES[symbol], index)
-            elif symbol in PELOTON_EXPANSION_TILES:
-                tile = Tile.from_shorthand(PELOTON_EXPANSION_TILES[symbol], index)
-            elif symbol in PROMOTIONAL_TILES:
-                tile = Tile.from_shorthand(PROMOTIONAL_TILES[symbol], index)
-            elif symbol in PERSONAL_TILES:
-                tile = Tile.from_shorthand(PERSONAL_TILES[symbol], index)
-            else:
-                continue
-            tiles.append(tile)
-            index += tile.distance
+        if code[0] in ('Aa1!'):
+            for symbol in code:
+                if symbol in BASE_GAME_TILES:
+                    tile = Tile.from_shorthand(BASE_GAME_TILES[symbol], index)
+                elif symbol in PELOTON_EXPANSION_TILES:
+                    tile = Tile.from_shorthand(PELOTON_EXPANSION_TILES[symbol], index)
+                elif symbol in PROMOTIONAL_TILES:
+                    tile = Tile.from_shorthand(PROMOTIONAL_TILES[symbol], index)
+                elif symbol in PERSONAL_TILES:
+                    tile = Tile.from_shorthand(PERSONAL_TILES[symbol], index)
+                else:
+                    continue
+                tiles.append(tile)
+                index += tile.distance
+        else:
+            start_finish_lines_crossed = 0
+            for symbol, next_symbol in zip(code, code[1:]):
+                if symbol in '>)(<|S123':
+                    continue
+
+                square = Square.from_char(symbol, index)
+
+                if next_symbol in '>)(<':
+                    square.curve = CURVES[next_symbol]
+
+                if start_finish_lines_crossed == 0:
+                    square.special += ' start'
+                elif start_finish_lines_crossed == 2:
+                    square.special += ' finish'
+                elif next_symbol in '123':
+                    square.special += ' breakaway'+next_symbol
+
+                if next_symbol == '|':
+                    start_finish_lines_crossed += 1
+
+                tile = Tile([square])
+                tiles.append(tile)
+                index += 1
 
         return cls(tiles)

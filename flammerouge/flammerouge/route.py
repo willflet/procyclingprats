@@ -108,9 +108,13 @@ class Square(object):
 
         # Crosswind
         elif character == 'x':
-            return cls(index, curve, width=2, special='crosswind')
+            return cls(index, curve, width=2, special='crosswind right')
         elif character == 'X':
-            return cls(index, curve, width=3, special='crosswind')
+            return cls(index, curve, width=3, special='crosswind right')
+        elif character == 'y':
+            return cls(index, curve, width=2, special='crosswind left')
+        elif character == 'Y':
+            return cls(index, curve, width=3, special='crosswind left')
 
         # Start / Finish / Breakaway
         elif character == '(':
@@ -146,7 +150,7 @@ class Tile(object):
 
     @property
     def distance(self):
-        return sum(1 for square in self.squares if square.special not in ('start', 'finish'))
+        return sum(1 for square in self.squares if 'start' not in square.special and 'finish' not in square.special)
 
     @property
     def ascent(self):
@@ -261,8 +265,8 @@ class Route(object):
                 index += tile.distance
         else:
             start_finish_lines_crossed = 0
-            for symbol, next_symbol in zip(code, code[1:]):
-                if symbol in '>)(<|S123':
+            for symbol, next_symbol in zip(code, code[1:]+' '):
+                if symbol in '>)(<|S123T':
                     continue
 
                 square = Square.from_char(symbol, index)

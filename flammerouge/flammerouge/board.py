@@ -22,6 +22,7 @@ class Board(object):
     def __init__(self, audio_path=AUDIO_PATH):
         self._w = tk.Tk()
         self._w.geometry(str(2000)+'x'+str(2000))
+        self._w.configure(cursor='left_ptr black black')
         self._c = tk.Canvas(self._w, width=2000, height=2000, bg='#83c750')
         self._c.pack()
         self._c.bind('<ButtonPress-1>', self.scroll_start)
@@ -59,8 +60,13 @@ class Board(object):
         elif 'divided' in square.special and lane == 1:
             outline_colour = None
             colour = '#83c750'
-        elif 'crosswind' in square.special and lane == 0:
-            colour = '#dd8833'
+        elif 'crosswind' in square.special:
+            if 'right' in square.special and lane == 0:
+                colour = '#dd8833'
+            elif 'left' in square.special and lane == (square.width - 1):
+                colour = '#dd8833'
+            elif square.width == 3 and lane == 1:
+                colour = '#e2994b'
 
         return colour, outline_colour
 
@@ -250,8 +256,8 @@ class Board(object):
                 self.place_marker('#33aa00', annotation)
             elif annotation in ('HC', '1', '2', '3', '4'):
                 self.place_marker('#cc3333', annotation)
-            elif annotation == 'P':
-                self.place_marker('#33aa00', annotation)
+            else:
+                self.place_marker('#aa5599', annotation)
 
     def place_marker(self, colour, text=None):
         marker = self._c.create_oval(

@@ -98,7 +98,7 @@ class Game(object):
 
         markers = (input('\nWhat intermediate points are there?\n') or '').upper().split()
 
-        print('\n',
+        print('Course length: {}\n\n'.format(route.distance),
             route.profile,
             "0''''''''10''''''''20''''''''30''''''''40''''''''50''''''''60''''''''70''''''''80",
             f'\nReady to race! Riders are:',

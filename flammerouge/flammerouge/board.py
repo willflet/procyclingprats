@@ -50,16 +50,18 @@ class Board(object):
             lighter_rgb = [hex(int(0.5*int(x,16) + 0.5*255)) for x in rgb]
             if lane == 0:
                 colour = '#'+''.join(x[2:] for x in lighter_rgb)
-            elif lane == 1 and 'breakaway2' in square.special:
-                colour = '#'+''.join(x[2:] for x in lighter_rgb)
-            elif lane == 2 and 'breakaway3' in square.special:
-                colour = '#'+''.join(x[2:] for x in lighter_rgb)
+            elif lane == 1:
+                if(('breakaway2' in square.special and
+                    'divided' not in square.special) or
+                    'breakaway3' in square.special):
+                    colour = '#'+''.join(x[2:] for x in lighter_rgb)
+            elif lane == 2:
+                if(('breakaway2' in square.special and
+                    'divided' in square.special) or
+                    'breakaway3' in square.special):
+                    colour = '#'+''.join(x[2:] for x in lighter_rgb)
             else:
                 colour = square.base_colour
-
-        elif 'divided' in square.special and lane == 1:
-            outline_colour = None
-            colour = '#83c750'
         elif 'crosswind' in square.special:
             if 'right' in square.special and lane == 0:
                 colour = '#dd8833'
@@ -67,6 +69,10 @@ class Board(object):
                 colour = '#dd8833'
             elif square.width == 3 and lane == 1:
                 colour = '#e2994b'
+
+        if 'divided' in square.special and lane == 1:
+            outline_colour = None
+            colour = '#83c750'
 
         return colour, outline_colour
 

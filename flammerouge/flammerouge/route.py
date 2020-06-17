@@ -25,7 +25,10 @@ class Square(object):
     @property
     def base_colour(self):
         if 'uphill' in self.special:
-            return '#bb6655'
+            if 'steep' in self.special:
+                return '#aa4433'
+            else:
+                return '#bb6655'
         elif 'downhill' in self.special:
             return '#5588dd'
         elif 'start' in self.special:
@@ -75,6 +78,8 @@ class Square(object):
             return cls(index, curve, width=3, special='uphill')
         elif character == 'm':
             return cls(index, curve, width=3, special='divided uphill')
+        elif character == 'Z':
+            return cls(index, curve, width=2, special='steep uphill')
 
         # Descent / Downhill
         elif character == 'd' or character == 'v':

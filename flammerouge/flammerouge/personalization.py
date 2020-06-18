@@ -7,17 +7,17 @@ COLOUR_TO_NAMES = dict(
         rider_1_name='Simon Yates'
     ),
     blue=dict(
-        team_name='Deceuninck - NickStep',
-        rider_0_name='Julian Alaphilippe',
-        rider_1_name='Remco Evenepoel'
+        team_name='Bosch – Lea & Perrins',
+        rider_0_name='Fabio Aru',
+        rider_1_name='Tiesj Benoot'
     ),
     green=dict(
-        team_name='Wilbo-Visma',
-        rider_0_name='Tom Dumoulin',
-        rider_1_name='Wout van Aert'
+        team_name='Team Specsavers – Visit Cornwall',
+        rider_0_name='Rohan Dennis',
+        rider_1_name='Sonny Colbrelli'
     ),
     black=dict(
-        team_name='Ali2R La Mondiale',
+        team_name='HP Morgan Stanley',
         rider_0_name='Romain Bardet',
         rider_1_name='Tony Gallopin'
     ),

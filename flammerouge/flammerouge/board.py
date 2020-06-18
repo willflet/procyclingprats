@@ -74,7 +74,7 @@ class Board(object):
 
         if 'divided' in square.special and lane == 1:
             outline_colour = None
-            colour = '#83c750'
+            colour = ""
 
         return colour, outline_colour
 
@@ -83,7 +83,7 @@ class Board(object):
         self._c.bind('<B2-Motion>', self.paint)
         self.old_xy = None
 
-        colours = ['#3388bb', '#ddbb88', '#9999aa', '#998877', '#ddeeff', '#83c750']
+        colours = ['#3388bb', '#ddbb88', '#bb3311', '#998877', '#ddeeff', '#83c750']
         def change_paint_colour(event):
             i = colours.index(self.paint_colour)
             self.paint_colour = colours[(i+1)%len(colours)]

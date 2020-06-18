@@ -28,6 +28,10 @@ class Board(object):
         self._c.bind('<ButtonPress-1>', self.scroll_start)
         self._c.bind('<B1-Motion>', self.scroll_move)
 
+        self._c.bind('<ButtonRelease-2>', self.paint_reset)
+        self._c.bind('<B2-Motion>', self.paint)
+        self.old_xy = None
+
         self.audio_path = audio_path
         self.make_soundboard()
 
@@ -317,6 +321,19 @@ class Board(object):
 
     def scroll_move(self, event):
         self._c.scan_dragto(event.x, event.y, gain=1)
+
+    def paint_reset(self, event):
+        self.old_xy = None
+
+    def paint(self, event):
+        x, y = self._c.canvasx(event.x), self._c.canvasy(event.y)
+        if self.old_xy is not None:
+            line = self._c.create_line(
+                self.old_xy[0], self.old_xy[1], x, y,
+                width=60, fill='#3388bb',
+                capstyle=tk.ROUND, smooth=True, splinesteps=36)
+            self._c.lower(line)
+        self.old_xy = (x,y)
 
     @staticmethod
     def rotation_matrix(angle):

@@ -272,6 +272,8 @@ class Route(object):
             start_finish_lines_crossed = 0
             for symbol, next_symbol in zip(code, code[1:]+' '):
                 if symbol in '>)(<|S123T':
+                    if next_symbol == '|':
+                        start_finish_lines_crossed += 1
                     continue
 
                 square = Square.from_char(symbol, index)

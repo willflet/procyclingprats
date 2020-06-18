@@ -28,9 +28,7 @@ class Board(object):
         self._c.bind('<ButtonPress-1>', self.scroll_start)
         self._c.bind('<B1-Motion>', self.scroll_move)
 
-        self._c.bind('<ButtonRelease-2>', self.paint_reset)
-        self._c.bind('<B2-Motion>', self.paint)
-        self.old_xy = None
+        self.make_paint()
 
         self.audio_path = audio_path
         self.make_soundboard()
@@ -79,6 +77,19 @@ class Board(object):
             colour = '#83c750'
 
         return colour, outline_colour
+
+    def make_paint(self):
+        self._c.bind('<ButtonRelease-2>', self.paint_reset)
+        self._c.bind('<B2-Motion>', self.paint)
+        self.old_xy = None
+
+        colours = ['#3388bb', '#ddbb88', '#998888', '#ddeeff', '#83c750']
+        def change_paint_colour(event):
+            i = colours.index(self.paint_colour)
+            self.paint_colour = colours[(i+1)%len(colours)]
+        self._w.bind("p", change_paint_colour)
+        self.paint_colour = colours[0]
+
 
     def make_soundboard(self):
         self._w.bind("q", self.attaque_de_pierre_rolland)
@@ -324,15 +335,16 @@ class Board(object):
 
     def paint_reset(self, event):
         self.old_xy = None
+        self._c.tag_lower('paint')
 
     def paint(self, event):
         x, y = self._c.canvasx(event.x), self._c.canvasy(event.y)
         if self.old_xy is not None:
             line = self._c.create_line(
                 self.old_xy[0], self.old_xy[1], x, y,
-                width=60, fill='#3388bb',
-                capstyle=tk.ROUND, smooth=True, splinesteps=36)
-            self._c.lower(line)
+                width=60, fill=self.paint_colour,
+                capstyle=tk.ROUND, smooth=True, splinesteps=36,
+                tags='paint')
         self.old_xy = (x,y)
 
     @staticmethod

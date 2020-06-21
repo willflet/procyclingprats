@@ -55,12 +55,27 @@ class Game(object):
                 if not using:
                     using = input()
                 elif using.lower() in AFFIRMATIVE_RESPONSES:
-                    riders = (
-                        input(
-                            f'\nWhat riders is the {colour} team using?\n'
-                            '    (Default: rouleur sprinteur)\n'
-                        ) or 'r s'
-                    ).split()
+                    if colour == 'pink':
+                        riders = (
+                            input(
+                                f'\nWhat riders is the {colour} team using?\n'
+                                '    (Default: pelotonbot pelotonbot)\n'
+                            ) or '# #'
+                        ).split()
+                    elif colour == 'purple':
+                        riders = (
+                            input(
+                                f'\nWhat riders is the {colour} team using?\n'
+                                '    (Default: breakawaybot breakawaybot)\n'
+                            ) or '@ @'
+                        ).split()
+                    else:
+                        riders = (
+                            input(
+                                f'\nWhat riders is the {colour} team using?\n'
+                                '    (Default: rouleur sprinteur)\n'
+                            ) or 'r s'
+                        ).split()
                     while True:
                         if len(riders) == 2:
                             break

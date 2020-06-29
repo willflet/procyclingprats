@@ -82,6 +82,7 @@ class Board(object):
         self._c.bind('<ButtonRelease-2>', self.paint_reset)
         self._c.bind('<B2-Motion>', self.paint)
         self.old_xy = None
+        self.paint_moves = 0
 
         colours = ['#3388bb', '#ddbb88', '#bb3311', '#998877', '#ddeeff', '#83c750']
         def change_paint_colour(event):
@@ -335,17 +336,20 @@ class Board(object):
 
     def paint_reset(self, event):
         self.old_xy = None
+        self.paint_moves = 0
         self._c.tag_lower('paint')
 
     def paint(self, event):
-        x, y = self._c.canvasx(event.x), self._c.canvasy(event.y)
-        if self.old_xy is not None:
-            line = self._c.create_line(
-                self.old_xy[0], self.old_xy[1], x, y,
-                width=60, fill=self.paint_colour,
-                capstyle=tk.ROUND, smooth=True, splinesteps=36,
-                tags='paint')
-        self.old_xy = (x,y)
+        self.paint_moves += 1
+        if self.paint_moves % 5 == 0:
+            x, y = self._c.canvasx(event.x), self._c.canvasy(event.y)
+            if self.old_xy is not None:
+                line = self._c.create_line(
+                    self.old_xy[0], self.old_xy[1], x, y,
+                    width=60, fill=self.paint_colour,
+                    capstyle=tk.ROUND, smooth=False,
+                    tags='paint')
+            self.old_xy = (x,y)
 
     @staticmethod
     def rotation_matrix(angle):

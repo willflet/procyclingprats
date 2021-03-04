@@ -188,6 +188,7 @@ class Board(object):
             width=(SQUARE_SIZE/5)
         )
         if lane*2 - square.width + 3 == 2: self._c.lower(square.spaces[lane])
+        if 'finish' in square.special: self._c.lower(square.spaces[lane])
         func = lambda event: self.click_space(event, square, lane)
         self._c.tag_bind(square.spaces[lane], '<Button-1>', func)
         func = lambda event: self.right_click_space(event, square, lane)
